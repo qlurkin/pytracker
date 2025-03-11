@@ -6,6 +6,7 @@ import pygame
 import sys
 
 FREQUENCY = 440.0  # Hz (La4)
+NB_TRACKS = 8
 
 
 def ui(engine: Engine):
@@ -13,7 +14,7 @@ def ui(engine: Engine):
     screen = pygame.display.set_mode((800, 600))
     pygame.display.set_caption("PyTracker")
     clock = pygame.time.Clock()
-    mixer = an(Mixer)
+    mixer = an(Mixer, NB_TRACKS)
     engine.set_node(mixer)
     while True:
         clock.tick(60)

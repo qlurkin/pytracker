@@ -1,17 +1,11 @@
 import numpy as np
-from zero import Zero
+from zero import ZERO
 from audio_node import AudioNode
 
 
-NB_TRACKS = 8
-
-ZERO = Zero()
-next(ZERO)
-
-
 class Mixer(AudioNode):
-    def __init__(self):
-        self.__tracks = [ZERO] * NB_TRACKS
+    def __init__(self, nb_tracks):
+        self.__tracks = [ZERO] * nb_tracks
         self.__master_volume = 0.5
 
     def send(self, frames: int | None):
