@@ -1,11 +1,11 @@
 import numpy as np
-from zero import zero
+from zero import Zero
 from audio_node import AudioNode
 
 
 NB_TRACKS = 8
 
-ZERO = zero()
+ZERO = Zero()
 next(ZERO)
 
 

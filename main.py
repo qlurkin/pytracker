@@ -1,5 +1,5 @@
 from audio_node import an
-from sine_oscilator import sine_oscilator
+from sine_oscilator import SineOscilator
 from mixer import Mixer
 from engine import Engine
 import pygame
@@ -20,9 +20,9 @@ def ui(engine: Engine):
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_b:
-                    mixer.set_track(0, an(sine_oscilator, FREQUENCY))
+                    mixer.set_track(0, an(SineOscilator, FREQUENCY))
                 if event.key == pygame.K_v:
-                    mixer.set_track(1, an(sine_oscilator, FREQUENCY * 0.5))
+                    mixer.set_track(1, an(SineOscilator, FREQUENCY * 0.5))
             if event.type == pygame.QUIT:
                 engine.stop()
                 sys.exit()

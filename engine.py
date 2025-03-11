@@ -1,7 +1,7 @@
 import miniaudio
 import numpy as np
 from audio_node import AudioNode, an
-from zero import zero
+from zero import Zero
 from config import SAMPLE_RATE
 
 
@@ -16,7 +16,7 @@ class Engine:
 
     def set_node(self, node: AudioNode | None = None):
         if node is None:
-            node = an(zero)
+            node = an(Zero)
         self.__node: AudioNode = node
 
     def start(self):
