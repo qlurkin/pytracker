@@ -5,23 +5,17 @@ from engine import Engine
 
 FREQUENCY = 440.0  # Hz (La4)
 
-mix = an(mixer)
-
-engine = Engine(mix)
+engine = Engine(an(mixer))
 
 engine.start()
 
 input("Appuyez sur Entrée pour arrêter...\n")
 
-sine = an(sine_oscilator, FREQUENCY)
-
-set_track(0, sine)
+set_track(0, an(sine_oscilator, FREQUENCY))
 
 input("Appuyez sur Entrée pour arrêter...\n")
 
-sine = an(sine_oscilator, FREQUENCY * 0.5)
-
-set_track(1, sine)
+set_track(1, an(sine_oscilator, FREQUENCY * 0.5))
 
 input("Appuyez sur Entrée pour arrêter...\n")
 engine.stop()
