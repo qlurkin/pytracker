@@ -1,15 +1,14 @@
 from collections.abc import Generator
-from typing import Callable, NoReturn, TypeVar
+from typing import NoReturn, TypeVar
 import numpy.typing as npt
 import numpy as np
 
 
-AudioNode = Generator[npt.NDArray[np.float64], int, NoReturn]
+AudioNode = Generator[npt.NDArray[np.floating], int, NoReturn]
 
 T = TypeVar("T", bound=AudioNode)
 
 
-def an(fun: Callable[..., T], *args, **kwargs) -> T:
-    node = fun(*args, **kwargs)
+def an(node: T, *args, **kwargs) -> T:
     next(node)
     return node

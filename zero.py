@@ -9,4 +9,4 @@ def Zero() -> AudioNode:
         frames = yield np.zeros(frames)
 
 
-ZERO = an(Zero)
+ZERO = an(Zero())
