@@ -20,32 +20,29 @@ def Ads(attack: float, decay: float, sustain: float):
             ) / attack  # Linear Attack
             parts.append(attack_samples)
             remaining_frames -= attack_frames
-        if elapsed_frames + frames - remaining_frames < attack + decay:
+            elapsed_frames += attack_frames
+        if elapsed_frames < attack + decay:
             decay_frames = min(
                 remaining_frames,
-                attack + decay - (elapsed_frames + frames - remaining_frames),
+                attack + decay - elapsed_frames,
             )
             decay_samples = (
                 down_eramp(
-                    (
-                        np.arange(decay_frames)
-                        + (elapsed_frames + frames - remaining_frames - attack)
-                    )
-                    / decay
+                    (np.arange(decay_frames) + (elapsed_frames - attack)) / decay
                 )
                 * (1 - sustain)
                 + sustain
             )
             parts.append(decay_samples)
             remaining_frames -= decay_frames
-        if elapsed_frames + frames >= attack + decay:
+            elapsed_frames += decay_frames
+        if remaining_frames >= 0:
             sustained_frames = remaining_frames
             sustained_samples = np.full(sustained_frames, sustain)
             parts.append(sustained_samples)
-            remaining_frames = 0
+            elapsed_frames += remaining_frames
 
         samples = np.hstack(parts)
-        elapsed_frames += frames
         frames = yield samples
 
 
