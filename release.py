@@ -1,9 +1,10 @@
 import numpy as np
 from config import SAMPLE_RATE
 from util import down_eramp
+from audio_node import AudioNode
 
 
-def Release(release_time: float):
+def Release(release_time: float) -> AudioNode:
     frames = yield np.array([])
     elapsed_frames = 0
 
@@ -12,9 +13,7 @@ def Release(release_time: float):
     while True:
         parts = []
         remaining_frames = frames
-        if elapsed_frames > release:
-            break
-        else:
+        if elapsed_frames < release:
             release_frames = min(remaining_frames, release - elapsed_frames)
             release_samples = down_eramp(
                 (np.arange(release_frames) + elapsed_frames) / release

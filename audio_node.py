@@ -4,7 +4,7 @@ import numpy.typing as npt
 import numpy as np
 
 
-AudioNode = Generator[npt.NDArray[np.floating], int, NoReturn]
+AudioNode = Generator[npt.NDArray[np.floating], int, NoReturn | None]
 
 T = TypeVar("T", bound=AudioNode)
 
