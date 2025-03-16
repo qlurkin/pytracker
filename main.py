@@ -1,5 +1,6 @@
 from ads import Ads
 from audio_node import an
+from hr import Hr
 from modulate import Modulate
 from sine_oscilator import SineOscilator
 from mixer import Mixer
@@ -27,7 +28,13 @@ def ui(engine: Engine):
                         0,
                         an(
                             Modulate(
-                                an(SineOscilator(FREQUENCY)), an(Ads(0.5, 0.2, 0.8))
+                                an(
+                                    Modulate(
+                                        an(SineOscilator(FREQUENCY)),
+                                        an(Ads(0.5, 0.2, 0.8)),
+                                    )
+                                ),
+                                an(Hr(0.5, 0.5)),
                             )
                         ),
                     )
