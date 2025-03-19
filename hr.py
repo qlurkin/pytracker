@@ -9,6 +9,8 @@ class Hr(AudioNode):
         self.__release = an(Release(release))
         self.set_hold(hold)
         self.__elapsed_frames = 0
+        self.__done = False
+        self.__releasing = False
 
     def send(self, frames: int | None):
         if frames is None:
@@ -22,7 +24,11 @@ class Hr(AudioNode):
             self.__elapsed_frames += hold_frames
 
         if frames > 0:
-            parts.append(self.__release.send(frames))
+            self.__releasing = True
+            release_samples = self.__release.send(frames)
+            if release_samples[-1] == 0:
+                self.__done = True
+            parts.append(release_samples)
             self.__elapsed_frames += frames
         return np.hstack(parts)
 
@@ -30,24 +36,31 @@ class Hr(AudioNode):
         raise StopIteration
 
     def off(self):
-        self.__hold = self.__elapsed_frames
+        if not self.__releasing:
+            self.__hold = self.__elapsed_frames
 
     def set_hold(self, hold: float):
         self.__hold = round(hold * SAMPLE_RATE)
+
+    def done(self) -> bool:
+        return self.__done
 
 
 if __name__ == "__main__":
     from matplotlib import pyplot as plt
 
-    val = an(Hr(0.5))
-    val.set_hold(1)
+    hr = an(Hr(0.5))
+    hr.set_hold(1)
     frames = SAMPLE_RATE // 10
     print(frames)
     parts = []
+    print(hr.done())
     for i in range(20):
         # if i == 9:
         #     val.off()
-        parts.append(val.send(frames))
+        parts.append(hr.send(frames))
+
+    print(hr.done())
 
     out = np.hstack(parts)
     t = np.arange(len(out)) / SAMPLE_RATE

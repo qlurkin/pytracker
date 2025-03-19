@@ -6,7 +6,6 @@ from audio_node import AudioNode
 class Mixer(AudioNode):
     def __init__(self, nb_tracks):
         self.__tracks = [ZERO] * nb_tracks
-        self.__master_volume = 0.5
 
     def send(self, frames: int | None):
         if frames is None:
@@ -14,7 +13,7 @@ class Mixer(AudioNode):
         samples = np.zeros(frames)
         for track in self.__tracks:
             samples += track.send(frames)
-        samples *= self.__master_volume
+        samples /= len(self.__tracks)
         return samples
 
     def throw(self, type=None, value=None, traceback=None):
