@@ -1,50 +1,42 @@
 from ads import Ads
 from audio_node import an
-from hr import Hr
+from engine import Engine
 from modulate import Modulate
-from scheduler import Scheduler
 from sine_oscilator import SineOscilator
-from mixer import Mixer
 from device import Device
 import pygame
+import pygame.midi
 
 pygame.init()
+pygame.midi.init()
 
 FREQUENCY = 440.0  # Hz (La4)
 NB_TRACKS = 8
 
 
-def ui(engine: Device):
+def ui(device: Device):
     screen = pygame.display.set_mode((800, 600))
     pygame.display.set_caption("PyTracker")
     clock = pygame.time.Clock()
-    mixer = an(Mixer(NB_TRACKS))
-    scheduler = Scheduler()
-    mixer.set_track(1, an(scheduler))
-    engine.set_node(mixer)
+    engine = Engine()
+    device.set_node(engine)
     running = True
     while running:
         clock.tick(60)
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_b:
-                    mixer.set_track(
+                    engine.add_note(
                         0,
                         an(
                             Modulate(
-                                an(
-                                    Modulate(
-                                        an(SineOscilator(FREQUENCY)),
-                                        an(Ads(0.01, 0.1, 0.8)),
-                                    )
-                                ),
-                                an(Hr(0.5, 0.5)),
+                                an(SineOscilator(FREQUENCY)),
+                                an(Ads(0.01, 0.1, 0.8)),
                             )
                         ),
+                        0.5,
+                        0.5,
                     )
-
-                if event.key == pygame.K_v:
-                    scheduler.add(an(SineOscilator(FREQUENCY * 0.5)), 1)
 
                 if event.key == pygame.K_q:
                     running = False
@@ -56,8 +48,26 @@ def ui(engine: Device):
         pygame.display.flip()
 
 
+def print_midi_device_info():
+    for i in range(pygame.midi.get_count()):
+        r = pygame.midi.get_device_info(i)
+        (interf, name, input, output, opened) = r
+
+        in_out = ""
+        if input:
+            in_out = "(input)"
+        if output:
+            in_out = "(output)"
+
+        print(
+            "%2i: interface :%s:, name :%s:, opened :%s:  %s"
+            % (i, interf, name, opened, in_out)
+        )
+
+
 def main():
     print("PyTracker")
+    print_midi_device_info()
     engine = Device()
     print("Sound Engine Created")
     engine.start()
@@ -65,6 +75,7 @@ def main():
     ui(engine)
     engine.stop()
     print("Sound Engine Stopped")
+    pygame.midi.quit()
     pygame.quit()
 
 
