@@ -1,6 +1,7 @@
 from audio_node import AudioNode, an
 import numpy as np
 from config import SAMPLE_RATE, NB_TRACKS
+from max_sensor import MaxSensor
 from mixer import Mixer
 from modulate import Modulate
 from scheduler import Scheduler
@@ -12,15 +13,19 @@ class Engine(AudioNode):
         mixer = an(Mixer(NB_TRACKS))
         self.__track_levels = []
         self.__track_schedulers = []
+        self.__track_sensors = []
         for i in range(NB_TRACKS):
             level = an(Value(1.0))
             scheduler = an(Scheduler())
-            mixer.set_track(i, an(Modulate(level, scheduler)))
+            track = an(Modulate(level, scheduler))
+            sensor = an(MaxSensor(track))
+            mixer.set_track(i, sensor)
             self.__track_levels.append(level)
             self.__track_schedulers.append(scheduler)
+            self.__track_sensors.append(sensor)
         self.__main_level = an(Value(1.0))
         output = an(Modulate(mixer, self.__main_level))
-        self.__node = output
+        self.__node = an(MaxSensor(output))
 
     def send(self, frames: int | None):
         if frames is None:
@@ -33,6 +38,12 @@ class Engine(AudioNode):
 
     def add_note(self, track: int, node: AudioNode, release: float, hold: float = 3600):
         self.__track_schedulers[track].add(node, release, hold)
+
+    def get_output_sensor(self) -> float:
+        return self.__node.get_value()
+
+    def get_track_sensor(self, track: int) -> float:
+        return self.__track_sensors[track].get_value()
 
 
 if __name__ == "__main__":

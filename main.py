@@ -43,7 +43,11 @@ def ui(device: Device):
             if event.type == pygame.QUIT:
                 running = False
 
-        pygame.draw.circle(screen, (255, 255, 255), (400, 300), 21)
+        screen.fill((0, 0, 0))
+
+        pygame.draw.circle(
+            screen, (255, 255, 255), (400, 300), engine.get_output_sensor() * 1000
+        )
 
         pygame.display.flip()
 

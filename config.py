@@ -1,3 +1,3 @@
 SAMPLE_RATE = 44100  # Hz
-BUFFER_SIZE_MS = 50  # milliseconds
+BUFFER_SIZE_MS = 10  # milliseconds
 NB_TRACKS = 8
