@@ -36,6 +36,9 @@ class Value(AudioNode):
     def set_value(self, value: float):
         self.__target = value
 
+    def get_value(self) -> float:
+        return self.__value
+
 
 if __name__ == "__main__":
     from matplotlib import pyplot as plt

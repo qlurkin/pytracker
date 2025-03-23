@@ -4,27 +4,41 @@ from engine import Engine
 from modulate import Modulate
 from sine_oscilator import SineOscilator
 from device import Device
+from focus_manager import FocusManager, draw_focus
 import pygame
 import pygame.midi
+from views.editable_value import editable_value
+from views.font import GRID_HEIGHT, GRID_WIDTH
 
 pygame.init()
 pygame.midi.init()
+
 
 FREQUENCY = 440.0  # Hz (La4)
 NB_TRACKS = 8
 
 
 def ui(device: Device):
-    screen = pygame.display.set_mode((800, 600))
+    screen = pygame.display.set_mode((1280, 800))
     pygame.display.set_caption("PyTracker")
     clock = pygame.time.Clock()
     engine = Engine()
     device.set_node(engine)
+    focus_manager = FocusManager()
     running = True
     while running:
         clock.tick(60)
-        for event in pygame.event.get():
+        events = pygame.event.get()
+        for event in events:
             if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_UP:
+                    focus_manager.up()
+                if event.key == pygame.K_DOWN:
+                    focus_manager.down()
+                if event.key == pygame.K_LEFT:
+                    focus_manager.left()
+                if event.key == pygame.K_RIGHT:
+                    focus_manager.right()
                 if event.key == pygame.K_b:
                     engine.add_note(
                         0,
@@ -44,6 +58,32 @@ def ui(device: Device):
                 running = False
 
         screen.fill((0, 0, 0))
+
+        focus_manager.begin_frame()
+
+        editable_value(
+            focus_manager,
+            screen,
+            pygame.Rect(20, 20, 4 * GRID_WIDTH, GRID_HEIGHT),
+            engine.set_main_level,
+            engine.get_main_level,
+            events,
+        )
+
+        editable_value(
+            focus_manager,
+            screen,
+            pygame.Rect(20, 80, 4 * GRID_WIDTH, GRID_HEIGHT),
+            engine.set_main_level,
+            engine.get_main_level,
+            events,
+        )
+
+        focused_rect = focus_manager.get_focused_rect()
+
+        if focused_rect is not None:
+            # pygame.draw.rect(screen, (255, 255, 0), focused_rect)
+            draw_focus(screen, focused_rect)
 
         pygame.draw.circle(
             screen, (255, 255, 255), (400, 300), engine.get_output_sensor() * 1000

@@ -45,6 +45,18 @@ class Engine(AudioNode):
     def get_track_sensor(self, track: int) -> float:
         return self.__track_sensors[track].get_value()
 
+    def get_track_level(self, track: int) -> float:
+        return self.__track_levels[track].get_value()
+
+    def set_track_level(self, track: int, value: float):
+        self.__track_levels[track].set_value(value)
+
+    def get_main_level(self) -> float:
+        return self.__main_level.get_value()
+
+    def set_main_level(self, value: float):
+        self.__main_level.set_value(value)
+
 
 if __name__ == "__main__":
     from matplotlib import pyplot as plt
