@@ -1,11 +1,16 @@
+from numpy.typing import NDArray
 from audio_node import AudioNode, an
 import numpy as np
 from config import SAMPLE_RATE, NB_TRACKS
+from graph_sensor import GraphSensor
 from max_sensor import MaxSensor
 from mixer import Mixer
 from modulate import Modulate
 from scheduler import Scheduler
 from value import Value
+
+
+GRAPH_SIZE = 2048
 
 
 class Engine(AudioNode):
@@ -14,18 +19,22 @@ class Engine(AudioNode):
         self.__track_levels = []
         self.__track_schedulers = []
         self.__track_sensors = []
+        self.__track_graph_sensors = []
         for i in range(NB_TRACKS):
             level = an(Value(1.0))
             scheduler = an(Scheduler())
             track = an(Modulate(level, scheduler))
-            sensor = an(MaxSensor(track))
-            mixer.set_track(i, sensor)
+            max_sensor = an(MaxSensor(track))
+            graph_sensor = an(GraphSensor(max_sensor, GRAPH_SIZE))
+            mixer.set_track(i, graph_sensor)
             self.__track_levels.append(level)
             self.__track_schedulers.append(scheduler)
-            self.__track_sensors.append(sensor)
+            self.__track_sensors.append(max_sensor)
+            self.__track_graph_sensors.append(graph_sensor)
         self.__main_level = an(Value(1.0))
         output = an(Modulate(mixer, self.__main_level))
-        self.__node = an(MaxSensor(output))
+        self.__main_graph_sensor = an(GraphSensor(output, GRAPH_SIZE))
+        self.__node = an(MaxSensor(self.__main_graph_sensor))
 
     def send(self, frames: int | None):
         if frames is None:
@@ -56,6 +65,9 @@ class Engine(AudioNode):
 
     def set_main_level(self, value: float):
         self.__main_level.set_value(value)
+
+    def get_main_graph(self) -> NDArray:
+        return self.__main_graph_sensor.get_values()
 
 
 if __name__ == "__main__":

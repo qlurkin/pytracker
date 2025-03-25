@@ -11,6 +11,8 @@ import pygame.midi
 from value import Value
 from views.editable_value import editable_value
 from views.font import GRID_HEIGHT, GRID_WIDTH
+from views.scope import scope
+import numpy as np
 
 pygame.init()
 pygame.midi.init()
@@ -84,11 +86,12 @@ def ui(device: Device):
         focused_rect = focus_manager.get_focused_rect()
 
         if focused_rect is not None:
-            # pygame.draw.rect(screen, (255, 255, 0), focused_rect)
             draw_focus(screen, focused_rect)
 
-        pygame.draw.circle(
-            screen, (255, 255, 255), (400, 300), max(engine.get_output_sensor()) * 1000
+        scope(
+            screen,
+            pygame.Rect(0, 600, 1280, 200),
+            np.max(engine.get_main_graph(), axis=0),
         )
 
         pygame.display.flip()
