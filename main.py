@@ -1,5 +1,6 @@
 from ads import Ads
 from audio_node import an
+from config import SAMPLE_RATE
 from engine import Engine
 from modulate import Modulate
 from pan import Pan
@@ -10,7 +11,7 @@ import pygame
 import pygame.midi
 from value import Value
 from views.editable_value import editable_value
-from views.font import GRID_HEIGHT, GRID_WIDTH
+from views.font import GRID_HEIGHT, GRID_WIDTH, draw_text
 from views.scope import scope
 import numpy as np
 
@@ -88,10 +89,23 @@ def ui(device: Device):
         if focused_rect is not None:
             draw_focus(screen, focused_rect)
 
+        samples = np.max(engine.get_main_graph(), axis=0)
+
+        freqs = np.fft.rfftfreq(len(samples), 1 / SAMPLE_RATE)
+        sp = np.fft.rfft(samples)
+
+        freq = freqs[np.argmax(np.abs(sp))]
+
+        draw_text(
+            screen,
+            f"{freq:.2f}",
+            pygame.Rect(20, 150, 4 * GRID_WIDTH, GRID_HEIGHT),
+        )
+
         scope(
             screen,
             pygame.Rect(0, 600, 1280, 200),
-            np.max(engine.get_main_graph(), axis=0),
+            samples,
         )
 
         pygame.display.flip()
