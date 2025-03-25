@@ -1,6 +1,5 @@
 from ads import Ads
 from audio_node import an
-from config import SAMPLE_RATE
 from engine import Engine
 from modulate import Modulate
 from pan import Pan
@@ -9,9 +8,11 @@ from device import Device
 from focus_manager import FocusManager, draw_focus
 import pygame
 import pygame.midi
+from tone import Tone
 from value import Value
+from views.output_monitor import output_monitor
 from views.editable_value import editable_value
-from views.font import GRID_HEIGHT, GRID_WIDTH, draw_text
+from views.font import GRID_HEIGHT, GRID_WIDTH
 from views.scope import scope
 import numpy as np
 
@@ -19,7 +20,7 @@ pygame.init()
 pygame.midi.init()
 
 
-FREQUENCY = 440.0  # Hz (La4)
+FREQUENCY = 440
 NB_TRACKS = 8
 
 
@@ -46,7 +47,7 @@ def ui(device: Device):
                     focus_manager.right()
                 if event.key == pygame.K_b:
                     engine.add_note(
-                        0,
+                        5,
                         an(
                             Modulate(
                                 an(Pan(an(SineOscilator(FREQUENCY)), an(Value(0.5)))),
@@ -91,21 +92,14 @@ def ui(device: Device):
 
         samples = np.max(engine.get_main_graph(), axis=0)
 
-        freqs = np.fft.rfftfreq(len(samples), 1 / SAMPLE_RATE)
-        sp = np.fft.rfft(samples)
-
-        freq = freqs[np.argmax(np.abs(sp))]
-
-        draw_text(
-            screen,
-            f"{freq:.2f}",
-            pygame.Rect(20, 150, 4 * GRID_WIDTH, GRID_HEIGHT),
-        )
-
         scope(
             screen,
             pygame.Rect(0, 600, 1280, 200),
             samples,
+        )
+
+        output_monitor(
+            screen, pygame.Rect(1000, 0, 5 * GRID_WIDTH, 8 * (GRID_HEIGHT + 2)), engine
         )
 
         pygame.display.flip()

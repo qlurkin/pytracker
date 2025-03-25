@@ -1,74 +1,79 @@
 import pygame
 from typing import Optional
-from tuple_math import add
+from util import add
 
 FOCUS_CORNER_SIZE = 7
 FOCUS_CORNER_WIDTH = 2
 FOCUS_CORNER_COLOR = (255, 255, 0)
+FOCUS_PADDING = 2
 
 
 def draw_focus(screen: pygame.Surface, rect: pygame.Rect):
+    topleft = add(rect.topleft, (-FOCUS_PADDING, -FOCUS_PADDING))
+    topright = add(rect.topright, (FOCUS_PADDING, -FOCUS_PADDING))
+    bottomleft = add(rect.bottomleft, (-FOCUS_PADDING, FOCUS_PADDING))
+    bottomright = add(rect.bottomright, (FOCUS_PADDING, FOCUS_PADDING))
     pygame.draw.line(
         screen,
         FOCUS_CORNER_COLOR,
-        rect.topleft,
-        add(rect.topleft, (FOCUS_CORNER_SIZE, 0)),
+        topleft,
+        add(topleft, (FOCUS_CORNER_SIZE, 0)),
         FOCUS_CORNER_WIDTH,
     )
 
     pygame.draw.line(
         screen,
         FOCUS_CORNER_COLOR,
-        rect.topleft,
-        add(rect.topleft, (0, FOCUS_CORNER_SIZE)),
+        topleft,
+        add(topleft, (0, FOCUS_CORNER_SIZE)),
         FOCUS_CORNER_WIDTH,
     )
 
     pygame.draw.line(
         screen,
         FOCUS_CORNER_COLOR,
-        rect.topright,
-        add(rect.topright, (-FOCUS_CORNER_SIZE, 0)),
+        topright,
+        add(topright, (-FOCUS_CORNER_SIZE, 0)),
         FOCUS_CORNER_WIDTH,
     )
 
     pygame.draw.line(
         screen,
         FOCUS_CORNER_COLOR,
-        rect.topright,
-        add(rect.topright, (0, FOCUS_CORNER_SIZE)),
+        topright,
+        add(topright, (0, FOCUS_CORNER_SIZE)),
         FOCUS_CORNER_WIDTH,
     )
 
     pygame.draw.line(
         screen,
         FOCUS_CORNER_COLOR,
-        rect.bottomleft,
-        add(rect.bottomleft, (FOCUS_CORNER_SIZE, 0)),
+        bottomleft,
+        add(bottomleft, (FOCUS_CORNER_SIZE, 0)),
         FOCUS_CORNER_WIDTH,
     )
 
     pygame.draw.line(
         screen,
         FOCUS_CORNER_COLOR,
-        rect.bottomleft,
-        add(rect.bottomleft, (0, -FOCUS_CORNER_SIZE)),
+        bottomleft,
+        add(bottomleft, (0, -FOCUS_CORNER_SIZE)),
         FOCUS_CORNER_WIDTH,
     )
 
     pygame.draw.line(
         screen,
         FOCUS_CORNER_COLOR,
-        rect.bottomright,
-        add(rect.bottomright, (-FOCUS_CORNER_SIZE, 0)),
+        bottomright,
+        add(bottomright, (-FOCUS_CORNER_SIZE, 0)),
         FOCUS_CORNER_WIDTH,
     )
 
     pygame.draw.line(
         screen,
         FOCUS_CORNER_COLOR,
-        rect.bottomright,
-        add(rect.bottomright, (0, -FOCUS_CORNER_SIZE)),
+        bottomright,
+        add(bottomright, (0, -FOCUS_CORNER_SIZE)),
         FOCUS_CORNER_WIDTH,
     )
 

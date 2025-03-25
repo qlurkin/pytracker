@@ -69,6 +69,9 @@ class Engine(AudioNode):
     def get_main_graph(self) -> NDArray:
         return self.__main_graph_sensor.get_values()
 
+    def get_track_graph(self, track: int) -> NDArray:
+        return self.__track_graph_sensors[track].get_values()
+
 
 if __name__ == "__main__":
     from matplotlib import pyplot as plt

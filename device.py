@@ -29,7 +29,6 @@ class Device:
     def start(self):
         def noise_maker():
             frames = yield b""
-            print(frames)
 
             while True:
                 if self.__next_node is not None:
