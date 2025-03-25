@@ -1,16 +1,16 @@
 import numpy as np
-from zero import ZERO
+from zero import ZERO_STEREO
 from audio_node import AudioNode
 
 
 class Mixer(AudioNode):
     def __init__(self, nb_tracks):
-        self.__tracks = [ZERO] * nb_tracks
+        self.__tracks = [ZERO_STEREO] * nb_tracks
 
     def send(self, frames: int | None):
         if frames is None:
             return np.array([])
-        samples = np.zeros(frames)
+        samples = np.zeros((2, frames))
         for track in self.__tracks:
             samples += track.send(frames)
         samples /= len(self.__tracks)
@@ -21,5 +21,5 @@ class Mixer(AudioNode):
 
     def set_track(self, id: int, node: AudioNode | None):
         if node is None:
-            node = ZERO
+            node = ZERO_STEREO
         self.__tracks[id] = node

@@ -2,11 +2,13 @@ from ads import Ads
 from audio_node import an
 from engine import Engine
 from modulate import Modulate
+from pan import Pan
 from sine_oscilator import SineOscilator
 from device import Device
 from focus_manager import FocusManager, draw_focus
 import pygame
 import pygame.midi
+from value import Value
 from views.editable_value import editable_value
 from views.font import GRID_HEIGHT, GRID_WIDTH
 
@@ -44,7 +46,7 @@ def ui(device: Device):
                         0,
                         an(
                             Modulate(
-                                an(SineOscilator(FREQUENCY)),
+                                an(Pan(an(SineOscilator(FREQUENCY)), an(Value(0.5)))),
                                 an(Ads(0.01, 0.1, 0.8)),
                             )
                         ),
@@ -86,7 +88,7 @@ def ui(device: Device):
             draw_focus(screen, focused_rect)
 
         pygame.draw.circle(
-            screen, (255, 255, 255), (400, 300), engine.get_output_sensor() * 1000
+            screen, (255, 255, 255), (400, 300), max(engine.get_output_sensor()) * 1000
         )
 
         pygame.display.flip()

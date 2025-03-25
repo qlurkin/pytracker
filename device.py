@@ -3,14 +3,14 @@ import numpy as np
 from audio_node import AudioNode, an
 from modulate import Modulate
 from release import Release
-from zero import ZERO
+from zero import ZERO_STEREO
 from config import SAMPLE_RATE, BUFFER_SIZE_MS
 from time import sleep
 
 
 class Device:
     def __init__(self, node: AudioNode | None = None):
-        self.__node = ZERO
+        self.__node = ZERO_STEREO
         self.__next_node: AudioNode | None = None
         self.set_node(node)
         self.__device = miniaudio.PlaybackDevice(
@@ -23,7 +23,7 @@ class Device:
 
     def set_node(self, node: AudioNode | None = None):
         if node is None:
-            node = ZERO
+            node = ZERO_STEREO
         self.__next_node = node
 
     def start(self):
@@ -36,7 +36,7 @@ class Device:
                     self.__node = self.__next_node
                     self.__next_node = None
                 samples = self.__node.send(frames)
-                samples = np.column_stack([samples, samples]).flatten()
+                samples = samples.T.flatten()
                 frames = yield samples.astype(np.float32).tobytes()
 
         noise = noise_maker()

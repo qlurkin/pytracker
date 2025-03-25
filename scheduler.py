@@ -28,7 +28,7 @@ class Scheduler(AudioNode):
     def send(self, frames: int | None):
         if frames is None:
             return np.array([])
-        samples = np.zeros(frames)
+        samples = np.zeros((2, frames))
         for note in self.__notes:
             samples += note.send(frames)
         self.cleanup()
