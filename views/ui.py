@@ -8,6 +8,7 @@ from focus_manager import FocusManager, draw_focus
 from modulate import Modulate
 from pan import Pan
 from sine_oscilator import SineOscilator
+from tone import Tone
 from value import Value
 from views.editable_value import editable_value
 from views.font import GRID_HEIGHT, draw_text, grid_rect
@@ -39,6 +40,23 @@ def ui(
                     an(
                         Modulate(
                             an(Pan(an(SineOscilator(440)), an(Value(0.5)))),
+                            an(Ads(0.01, 0.1, 0.8)),
+                        )
+                    ),
+                    0.5,
+                    0.5,
+                )
+            if event.key == pygame.K_v:
+                engine.add_note(
+                    3,
+                    an(
+                        Modulate(
+                            an(
+                                Pan(
+                                    an(SineOscilator(Tone(6, 4).frequency)),
+                                    an(Value(0.5)),
+                                )
+                            ),
                             an(Ads(0.01, 0.1, 0.8)),
                         )
                     ),

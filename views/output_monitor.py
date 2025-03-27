@@ -94,9 +94,15 @@ def output_monitor(screen: pygame.Surface, rect: pygame.Rect, engine: Engine):
         )
 
     for tone in tones:
+        delta_y = 0
+        if tone.semitone in [1, 3, 6, 8, 10]:
+            delta_y = -piano_rect.height / 2
         pygame.draw.circle(
             screen,
             (255, 0, 255),
-            (piano_rect.left + semitones_pos[tone.semitone], piano_rect.centery),
+            (
+                piano_rect.left + semitones_pos[tone.semitone],
+                piano_rect.bottom - piano_rect.height / 4 + delta_y,
+            ),
             (piano_key_width - 2) / 2,
         )
