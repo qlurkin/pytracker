@@ -2,7 +2,7 @@ from engine import Engine
 from device import Device
 import pygame
 import pygame.midi
-from ui import ui
+from views.ui import ui
 
 pygame.init()
 pygame.midi.init()

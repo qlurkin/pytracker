@@ -10,7 +10,7 @@ from pan import Pan
 from sine_oscilator import SineOscilator
 from value import Value
 from views.editable_value import editable_value
-from views.font import grid_rect
+from views.font import GRID_HEIGHT, draw_text, grid_rect
 from views.output_monitor import output_monitor
 from views.scope import scope
 
@@ -48,10 +48,25 @@ def ui(
 
     focus_manager.begin_frame()
 
+    samples = np.max(engine.get_main_graph(), axis=0)
+
+    scope_rect = pygame.Rect(0, 0, rect.width, 150)
+
+    scope(screen, scope_rect, samples)
+
+    tempo_rect = grid_rect(5, 1)
+    tempo_rect.topright = (rect.width - 20, scope_rect.bottom + 20)
+    draw_text(screen, "T▹???", tempo_rect)
+
+    output_monitor_rect = grid_rect(5, 8)
+    output_monitor_rect.topright = tempo_rect.bottomright
+
+    output_monitor(screen, output_monitor_rect, engine)
+
     editable_value(
         focus_manager,
         screen,
-        grid_rect(4, 1, (20, 20)),
+        grid_rect(4, 1, (20, tempo_rect.top)),
         engine.set_main_level,
         engine.get_main_level,
         events,
@@ -60,7 +75,7 @@ def ui(
     editable_value(
         focus_manager,
         screen,
-        grid_rect(4, 1, (20, 80)),
+        grid_rect(4, 1, (20, tempo_rect.top + GRID_HEIGHT)),
         engine.set_main_level,
         engine.get_main_level,
         events,
@@ -70,16 +85,3 @@ def ui(
 
     if focused_rect is not None:
         draw_focus(screen, focused_rect)
-
-    samples = np.max(engine.get_main_graph(), axis=0)
-
-    scope(
-        screen,
-        pygame.Rect(0, rect.height - 200, rect.width, 200),
-        samples,
-    )
-
-    output_monitor_rect = grid_rect(5, 8)
-    output_monitor_rect.topright = (rect.width - 20, 20)
-
-    output_monitor(screen, output_monitor_rect, engine)

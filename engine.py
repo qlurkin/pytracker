@@ -48,7 +48,7 @@ class Engine(AudioNode):
     def add_note(self, track: int, node: AudioNode, release: float, hold: float = 3600):
         self.__track_schedulers[track].add(node, release, hold)
 
-    def get_output_sensor(self) -> list[float]:
+    def get_main_sensor(self) -> list[float]:
         return self.__node.get_value()
 
     def get_track_sensor(self, track: int) -> float:

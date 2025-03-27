@@ -13,7 +13,7 @@ class Mixer(AudioNode):
         samples = np.zeros((2, frames))
         for track in self.__tracks:
             samples += track.send(frames)
-        samples /= len(self.__tracks)
+        # samples /= len(self.__tracks)
         return samples
 
     def throw(self, type=None, value=None, traceback=None):
