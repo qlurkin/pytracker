@@ -10,7 +10,7 @@ from pan import Pan
 from sine_oscilator import SineOscilator
 from value import Value
 from views.editable_value import editable_value
-from views.font import GRID_WIDTH, grid_rect
+from views.font import grid_rect
 from views.output_monitor import output_monitor
 from views.scope import scope
 
@@ -51,7 +51,7 @@ def ui(
     editable_value(
         focus_manager,
         screen,
-        grid_rect(20, 20, 4, 1),
+        grid_rect(4, 1, (20, 20)),
         engine.set_main_level,
         engine.get_main_level,
         events,
@@ -60,7 +60,7 @@ def ui(
     editable_value(
         focus_manager,
         screen,
-        grid_rect(20, 80, 4, 1),
+        grid_rect(4, 1, (20, 80)),
         engine.set_main_level,
         engine.get_main_level,
         events,
@@ -79,6 +79,7 @@ def ui(
         samples,
     )
 
-    output_monitor(
-        screen, grid_rect(rect.width - 5 * GRID_WIDTH - 20, 20, 5, 8), engine
-    )
+    output_monitor_rect = grid_rect(5, 8)
+    output_monitor_rect.topright = (rect.width - 20, 20)
+
+    output_monitor(screen, output_monitor_rect, engine)

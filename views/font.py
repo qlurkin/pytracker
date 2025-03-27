@@ -16,8 +16,8 @@ GRID_HEIGHT = __A_RECT.height
 GRID_SIZE = (GRID_WIDTH, GRID_HEIGHT)
 
 
-def grid_rect(x, y, width, height):
-    return pygame.Rect(x, y, width * GRID_WIDTH, height * GRID_HEIGHT)
+def grid_rect(width, height, topleft=(0, 0)):
+    return pygame.Rect(topleft, (width * GRID_WIDTH, height * GRID_HEIGHT))
 
 
 def draw_text(
