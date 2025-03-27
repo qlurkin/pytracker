@@ -18,6 +18,6 @@ def output_monitor(screen: pygame.Surface, rect: pygame.Rect, engine: Engine):
             screen,
             f"{i + 1} {tone_to_str(tone)}",
             pygame.Rect(
-                rect.left, rect.top + i * (GRID_HEIGHT + 2), 5 * GRID_WIDTH, GRID_HEIGHT
+                rect.left, rect.top + i * (GRID_HEIGHT), 5 * GRID_WIDTH, GRID_HEIGHT
             ),
         )

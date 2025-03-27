@@ -12,8 +12,12 @@ FONT = Font("JetBrainsMonoNerdFont-Regular.ttf", size=20)
 
 __A_RECT = FONT.get_rect("A")
 GRID_WIDTH = __A_RECT.width
-GRID_HEIGHT = __A_RECT.y - 1
+GRID_HEIGHT = __A_RECT.height
 GRID_SIZE = (GRID_WIDTH, GRID_HEIGHT)
+
+
+def grid_rect(x, y, width, height):
+    return pygame.Rect(x, y, width * GRID_WIDTH, height * GRID_HEIGHT)
 
 
 def draw_text(
@@ -21,7 +25,7 @@ def draw_text(
 ):
     txt_surf = FONT.render(txt, True, color)
     txt_rect = txt_surf.get_rect()
-    txt_rect.topleft = add(rect.topleft, (2, -2))
+    txt_rect.center = add(rect.center, (0, 0))
     surface.blit(txt_surf, txt_rect)
 
 

@@ -10,7 +10,7 @@ from pan import Pan
 from sine_oscilator import SineOscilator
 from value import Value
 from views.editable_value import editable_value
-from views.font import GRID_HEIGHT, GRID_WIDTH
+from views.font import GRID_WIDTH, grid_rect
 from views.output_monitor import output_monitor
 from views.scope import scope
 
@@ -51,7 +51,7 @@ def ui(
     editable_value(
         focus_manager,
         screen,
-        pygame.Rect(20, 20, 4 * GRID_WIDTH, GRID_HEIGHT),
+        grid_rect(20, 20, 4, 1),
         engine.set_main_level,
         engine.get_main_level,
         events,
@@ -60,7 +60,7 @@ def ui(
     editable_value(
         focus_manager,
         screen,
-        pygame.Rect(20, 80, 4 * GRID_WIDTH, GRID_HEIGHT),
+        grid_rect(20, 80, 4, 1),
         engine.set_main_level,
         engine.get_main_level,
         events,
@@ -75,10 +75,10 @@ def ui(
 
     scope(
         screen,
-        pygame.Rect(0, 600, 1280, 200),
+        pygame.Rect(0, rect.height - 200, rect.width, 200),
         samples,
     )
 
     output_monitor(
-        screen, pygame.Rect(1000, 0, 5 * GRID_WIDTH, 8 * (GRID_HEIGHT + 2)), engine
+        screen, grid_rect(rect.width - 5 * GRID_WIDTH - 20, 20, 5, 8), engine
     )
