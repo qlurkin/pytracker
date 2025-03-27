@@ -1,8 +1,14 @@
 import pygame
 import numpy as np
 
+from ads import Ads
+from audio_node import an
 from engine import Engine
 from focus_manager import FocusManager, draw_focus
+from modulate import Modulate
+from pan import Pan
+from sine_oscilator import SineOscilator
+from value import Value
 from views.editable_value import editable_value
 from views.font import GRID_HEIGHT, GRID_WIDTH
 from views.output_monitor import output_monitor
@@ -17,6 +23,29 @@ def ui(
     events: list[pygame.Event],
     engine: Engine,
 ):
+    for event in events:
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_UP:
+                focus_manager.up()
+            if event.key == pygame.K_DOWN:
+                focus_manager.down()
+            if event.key == pygame.K_LEFT:
+                focus_manager.left()
+            if event.key == pygame.K_RIGHT:
+                focus_manager.right()
+            if event.key == pygame.K_b:
+                engine.add_note(
+                    5,
+                    an(
+                        Modulate(
+                            an(Pan(an(SineOscilator(440)), an(Value(0.5)))),
+                            an(Ads(0.01, 0.1, 0.8)),
+                        )
+                    ),
+                    0.5,
+                    0.5,
+                )
+
     focus_manager.begin_frame()
 
     editable_value(

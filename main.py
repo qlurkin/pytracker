@@ -1,15 +1,8 @@
-from ads import Ads
-from audio_node import an
 from engine import Engine
-from modulate import Modulate
-from pan import Pan
-from sine_oscilator import SineOscilator
 from device import Device
-from focus_manager import FocusManager
 import pygame
 import pygame.midi
 from ui import ui
-from value import Value
 
 pygame.init()
 pygame.midi.init()
@@ -28,34 +21,12 @@ def loop(device: Device):
     clock = pygame.time.Clock()
     engine = Engine()
     device.set_node(engine)
-    focus_manager = FocusManager()
     running = True
     while running:
         clock.tick(60)
         events = pygame.event.get()
         for event in events:
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_UP:
-                    focus_manager.up()
-                if event.key == pygame.K_DOWN:
-                    focus_manager.down()
-                if event.key == pygame.K_LEFT:
-                    focus_manager.left()
-                if event.key == pygame.K_RIGHT:
-                    focus_manager.right()
-                if event.key == pygame.K_b:
-                    engine.add_note(
-                        5,
-                        an(
-                            Modulate(
-                                an(Pan(an(SineOscilator(FREQUENCY)), an(Value(0.5)))),
-                                an(Ads(0.01, 0.1, 0.8)),
-                            )
-                        ),
-                        0.5,
-                        0.5,
-                    )
-
                 if event.key == pygame.K_q:
                     running = False
             if event.type == pygame.QUIT:
