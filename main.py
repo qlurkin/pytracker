@@ -5,16 +5,11 @@ from modulate import Modulate
 from pan import Pan
 from sine_oscilator import SineOscilator
 from device import Device
-from focus_manager import FocusManager, draw_focus
+from focus_manager import FocusManager
 import pygame
 import pygame.midi
-from tone import Tone
+from ui import ui
 from value import Value
-from views.output_monitor import output_monitor
-from views.editable_value import editable_value
-from views.font import GRID_HEIGHT, GRID_WIDTH
-from views.scope import scope
-import numpy as np
 
 pygame.init()
 pygame.midi.init()
@@ -22,10 +17,13 @@ pygame.midi.init()
 
 FREQUENCY = 440
 NB_TRACKS = 8
+WIDTH = 1280
+HEIGHT = 800
+SIZE = (WIDTH, HEIGHT)
 
 
-def ui(device: Device):
-    screen = pygame.display.set_mode((1280, 800))
+def loop(device: Device):
+    screen = pygame.display.set_mode(SIZE)
     pygame.display.set_caption("PyTracker")
     clock = pygame.time.Clock()
     engine = Engine()
@@ -65,42 +63,7 @@ def ui(device: Device):
 
         screen.fill((0, 0, 0))
 
-        focus_manager.begin_frame()
-
-        editable_value(
-            focus_manager,
-            screen,
-            pygame.Rect(20, 20, 4 * GRID_WIDTH, GRID_HEIGHT),
-            engine.set_main_level,
-            engine.get_main_level,
-            events,
-        )
-
-        editable_value(
-            focus_manager,
-            screen,
-            pygame.Rect(20, 80, 4 * GRID_WIDTH, GRID_HEIGHT),
-            engine.set_main_level,
-            engine.get_main_level,
-            events,
-        )
-
-        focused_rect = focus_manager.get_focused_rect()
-
-        if focused_rect is not None:
-            draw_focus(screen, focused_rect)
-
-        samples = np.max(engine.get_main_graph(), axis=0)
-
-        scope(
-            screen,
-            pygame.Rect(0, 600, 1280, 200),
-            samples,
-        )
-
-        output_monitor(
-            screen, pygame.Rect(1000, 0, 5 * GRID_WIDTH, 8 * (GRID_HEIGHT + 2)), engine
-        )
+        ui(screen, pygame.Rect((0, 0), SIZE), events, engine)
 
         pygame.display.flip()
 
@@ -123,15 +86,11 @@ def print_midi_device_info():
 
 
 def main():
-    print("PyTracker")
     print_midi_device_info()
     engine = Device()
-    print("Sound Engine Created")
     engine.start()
-    print("Sound Engine Started")
-    ui(engine)
+    loop(engine)
     engine.stop()
-    print("Sound Engine Stopped")
     pygame.midi.quit()
     pygame.quit()
 

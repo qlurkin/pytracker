@@ -6,7 +6,9 @@ from util import add
 
 
 pygame.ftfont.init()
-FONT = Font("ProFontIIxNerdFont-Regular.ttf", size=20)
+# FONT = Font("ProFontIIxNerdFont-Regular.ttf", size=20)
+# FONT = Font("TerminusTTF-4.49.3.ttf", size=20)
+FONT = Font("JetBrainsMonoNerdFont-Regular.ttf", size=20)
 
 __A_RECT = FONT.get_rect("A")
 GRID_WIDTH = __A_RECT.width
