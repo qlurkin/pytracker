@@ -59,7 +59,10 @@ class Step:
         hold = instrument.get_hold()
         engine.add_note(track, node, release, hold)
 
-    def set_instrument(self, instrument: Instrument):
+    def set_instrument(self, instrument: Optional[Instrument]):
+        if instrument is None:
+            self.__instrument = None
+            return
         self.__instrument = InstrumentInstance(instrument)
 
 
@@ -71,7 +74,7 @@ class Phrase:
     def __getitem__(self, index: int) -> Optional[Step]:
         return self.__steps[index]
 
-    def __setitem__(self, index: int, step: Step):
+    def __setitem__(self, index: int, step: Optional[Step]):
         self.__steps[index] = step
 
     def __len__(self) -> int:
@@ -113,7 +116,10 @@ class Chain:
     def get_instance(self, index: int) -> Optional[PhraseInstance]:
         return self.__phrases[index]
 
-    def __setitem__(self, index: int, phrase: Phrase):
+    def __setitem__(self, index: int, phrase: Optional[Phrase]):
+        if phrase is None:
+            self.__phrases[index] = None
+            return
         self.__phrases[index] = PhraseInstance(phrase)
 
     def __len__(self):
@@ -182,8 +188,11 @@ class Track:
             return None
         return instance.chain
 
-    def __setitem__(self, index: int, value: Chain):
-        self.__chains[index] = ChainInstance(value)
+    def __setitem__(self, index: int, chain: Optional[Chain]):
+        if chain is None:
+            self.__chains[index] = None
+            return
+        self.__chains[index] = ChainInstance(chain)
 
     def __len__(self):
         return len(self.__chains)
@@ -206,7 +215,7 @@ class Sequencer:
         ##### TEST #####
         self.__instruments[0] = Instrument(0)
         step = Step(Tone())
-        step.set_instrument(self.__instruments[0])
+        step.set_instrument(self.instrument[0])
         self.phrase[0] = Phrase(0)
         self.phrase[0][0] = step
         self.chain[0] = Chain(0)
