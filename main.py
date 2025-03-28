@@ -21,7 +21,7 @@ def loop(device: Device):
     pygame.display.set_caption("PyTracker")
     clock = pygame.time.Clock()
     engine = Engine()
-    sequencer = Sequencer()
+    sequencer = Sequencer(engine)
     device.set_node(engine)
     running = True
     while running:

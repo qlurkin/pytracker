@@ -1,8 +1,9 @@
 from time import perf_counter as time
 from typing import Optional
 from ads import Ads
-from audio_node import an
+from audio_node import AudioNode, an
 from config import NB_TRACKS
+from engine import Engine
 from modulate import Modulate
 from pan import Pan
 from sine_oscilator import SineOscilator
@@ -14,8 +15,8 @@ class Instrument:
     def __init__(self, id: int):
         self.__id = id
 
-    def make_note(self, frequency):
-        an(
+    def make_note(self, frequency) -> AudioNode:
+        return an(
             Modulate(
                 an(
                     Pan(
@@ -27,10 +28,10 @@ class Instrument:
             )
         )
 
-    def get_release(self):
+    def get_release(self) -> float:
         return 0.5
 
-    def get_hold(self):
+    def get_hold(self) -> float:
         return 0.5
 
 
@@ -39,14 +40,23 @@ class InstrumentInstance:
         # Table should probably be here
         self.__instrument = instrument
 
+    def get(self) -> Instrument:
+        return self.__instrument
+
 
 class Step:
     def __init__(self, tone: Tone):
         self.__tone = tone
         self.__instrument: Optional[InstrumentInstance] = None
 
-    def play(self):
-        pass
+    def play(self, track: int, engine: Engine):
+        if self.__instrument is None:
+            return
+        instrument = self.__instrument.get()
+        node = instrument.make_note(self.__tone.frequency)
+        release = instrument.get_release()
+        hold = instrument.get_hold()
+        engine.add_note(track, node, release, hold)
 
 
 class Phrase:
@@ -72,10 +82,10 @@ class PhraseInstance:
         if self.__cursor == len(self.__phrase):
             self.__cursor = 0
             res = True
-        step = self.__phrase[self.__cursor]
-        if step is not None:
-            step.play()
         return res
+
+    def get_step(self) -> Optional[Step]:
+        return self.__phrase[self.__cursor]
 
 
 class Chain:
@@ -109,9 +119,16 @@ class ChainInstance:
             return True
         return False
 
+    def get_step(self) -> Optional[Step]:
+        phrase = self.__chain[self.__cursor]
+        if phrase is not None:
+            return phrase.get_step()
+        return None
+
 
 class Sequencer:
-    def __init__(self):
+    def __init__(self, engine: Engine):
+        self.__engine = engine
         self.__tempo: int = 128
         self.__last_tick_time: float = time()
         self.step_count = 0
@@ -135,6 +152,12 @@ class Sequencer:
     def tick_time(self):
         return 60 / (self.__tempo * 24)
 
+    def get_step(self, track: int) -> Optional[Step]:
+        chain = self.__song[track][self.__cursors[track]]
+        if chain is not None:
+            return chain.get_step()
+        return None
+
     def cursor_bump(self, track: int):
         chain = self.__song[track][self.__cursors[track]]
         if chain is None:
@@ -152,6 +175,9 @@ class Sequencer:
         self.step_count += 1
         for i in range(NB_TRACKS):
             self.cursor_bump(i)
+            step = self.get_step(i)
+            if step is not None:
+                step.play(i, self.__engine)
 
     def tick(self):
         self.__remaining_ticks_before_next_step -= 1
