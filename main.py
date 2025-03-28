@@ -1,5 +1,6 @@
 from engine import Engine
 from device import Device
+from sequencer import Sequencer
 import pygame
 import pygame.midi
 from views.ui import ui
@@ -20,6 +21,7 @@ def loop(device: Device):
     pygame.display.set_caption("PyTracker")
     clock = pygame.time.Clock()
     engine = Engine()
+    sequencer = Sequencer()
     device.set_node(engine)
     running = True
     while running:
@@ -32,9 +34,10 @@ def loop(device: Device):
             if event.type == pygame.QUIT:
                 running = False
 
+        sequencer.update()
         screen.fill((0, 0, 0))
 
-        ui(screen, pygame.Rect((0, 0), SIZE), events, engine)
+        ui(screen, pygame.Rect((0, 0), SIZE), events, engine, sequencer)
 
         pygame.display.flip()
 

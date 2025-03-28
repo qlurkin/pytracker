@@ -7,6 +7,7 @@ from engine import Engine
 from focus_manager import FocusManager, draw_focus
 from modulate import Modulate
 from pan import Pan
+from sequencer import Sequencer
 from sine_oscilator import SineOscilator
 from tone import Tone
 from value import Value
@@ -23,6 +24,7 @@ def ui(
     rect: pygame.Rect,
     events: list[pygame.Event],
     engine: Engine,
+    sequencer: Sequencer,
 ):
     for event in events:
         if event.type == pygame.KEYDOWN:
@@ -74,7 +76,7 @@ def ui(
 
     tempo_rect = grid_rect(5, 1)
     tempo_rect.topright = (rect.width - 20, scope_rect.bottom + 20)
-    draw_text(screen, "T▹???", tempo_rect)
+    draw_text(screen, f"T▹{sequencer.get_tempo()}", tempo_rect)
 
     output_monitor_rect = grid_rect(5, 8)
     output_monitor_rect.topright = tempo_rect.bottomright
@@ -97,6 +99,12 @@ def ui(
         engine.set_main_level,
         engine.get_main_level,
         events,
+    )
+
+    draw_text(
+        screen,
+        str(sequencer.step_count),
+        grid_rect(10, 1, (20, tempo_rect.top + 2 * GRID_HEIGHT)),
     )
 
     focused_rect = focus_manager.get_focused_rect()
