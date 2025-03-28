@@ -4,15 +4,25 @@ from config import NB_TRACKS
 from tone import Tone
 
 
-class Note:
+class Instrument:
+    pass
+
+
+class InstrumentInstance:
+    def __init__(self, instrument: Instrument):
+        self.__instrument = instrument
+
+
+class Step:
     def __init__(self, tone: Tone):
         self.__tone = tone
+        self.__instrument: Optional[InstrumentInstance] = None
 
 
 class Phrase:
     def __init__(self, id: int):
         self.__id = id
-        self.__notes: list[Optional[Note]] = [None for _ in range(16)]
+        self.__notes: list[Optional[Step]] = [None for _ in range(16)]
 
 
 class PhraseInstance:
@@ -42,11 +52,12 @@ class Sequencer:
         self.__groove_index: int = 0
         self.__remaining_ticks_before_next_step = self.__groove[self.__groove_index]
         self.__song: list[list[Optional[ChainInstance]]] = [
-            [None for _ in range(16)] for _ in range(NB_TRACKS)
+            [None for _ in range(256)] for _ in range(NB_TRACKS)
         ]
         self.__cursors: list[int] = [0 for _ in range(NB_TRACKS)]
-        self.__chains: list[Optional[Chain]] = [None for _ in range(128)]
-        self.__phrases: list[Optional[Phrase]] = [None for _ in range(128)]
+        self.__chains: list[Optional[Chain]] = [None for _ in range(256)]
+        self.__phrases: list[Optional[Phrase]] = [None for _ in range(256)]
+        self.__instruments: list[Optional[Instrument]] = [None for _ in range(128)]
 
     def get_tempo(self):
         return self.__tempo
