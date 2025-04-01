@@ -210,7 +210,7 @@ class Sequencer:
         self.__tracks: list[Track] = [Track() for _ in range(NB_TRACKS)]
         self.__chains: list[Optional[Chain]] = [None for _ in range(256)]
         self.__phrases: list[Optional[Phrase]] = [None for _ in range(256)]
-        self.__instruments: list[Optional[Instrument]] = [None for _ in range(128)]
+        self.__instruments: list[Optional[Instrument]] = [None for _ in range(256)]
 
         ##### TEST #####
         self.__instruments[0] = Instrument(0)
