@@ -40,7 +40,9 @@ def freq_to_tone(freq: float) -> Optional[Tone]:
     return Tone(closest_n % 12, 4 + closest_n // 12)
 
 
-def float_to_hex(value: float, min: float, max: float) -> str:
+def float_to_hex(value: float | None, min: float, max: float) -> str:
+    if value is None:
+        return "--"
     if value < min:
         return "#U"
     if value > max:
