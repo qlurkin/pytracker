@@ -40,7 +40,18 @@ def freq_to_tone(freq: float) -> Optional[Tone]:
     return Tone(closest_n % 12, 4 + closest_n // 12)
 
 
+def float_to_hex(value: float, min: float, max: float) -> str:
+    if value < min:
+        return "#U"
+    if value > max:
+        return "#O"
+    v = round(255 * (value - min) / (max - min))
+    return f"{v:0>2x}".upper()
+
+
 if __name__ == "__main__":
     print(freq_to_tone(880))
     print(freq_to_tone(220))
     print(freq_to_tone(Tone(0, 5).frequency))
+    print(float_to_hex(1, 0, 255))
+    print(float_to_hex(255, 0, 255))
