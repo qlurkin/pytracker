@@ -11,6 +11,7 @@ from sequencer import Sequencer
 from sine_oscilator import SineOscilator
 from tone import Tone
 from value import Value
+from views.frame import frame
 from views.editable_value import editable_value
 from views.font import GRID_HEIGHT, draw_text, grid_rect
 from views.output_monitor import output_monitor
@@ -106,6 +107,8 @@ def ui(
         str(sequencer.step_count),
         grid_rect(10, 1, (20, tempo_rect.top + 2 * GRID_HEIGHT)),
     )
+
+    frame(focus_manager, screen, pygame.Rect(200, 200, 300, 200), "Truc")
 
     focused_rect = focus_manager.get_focused_rect()
 
