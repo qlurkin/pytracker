@@ -108,7 +108,8 @@ def ui(
         grid_rect(10, 1, (20, tempo_rect.top + 2 * GRID_HEIGHT)),
     )
 
-    frame(focus_manager, screen, pygame.Rect(200, 200, 300, 200), "Truc")
+    inner = frame(focus_manager, screen, pygame.Rect(200, 200, 300, 200), "Truc")
+    pygame.draw.rect(screen, (255, 0, 0), inner)
 
     focused_rect = focus_manager.get_focused_rect()
 

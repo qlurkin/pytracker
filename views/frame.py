@@ -1,7 +1,7 @@
 import pygame
 from focus_manager import FocusManager
 from util import add
-from .font import GRID_HEIGHT, draw_text, grid_rect
+from .font import GRID_HEIGHT, draw_text, grid_rect, GRID_WIDTH
 
 
 def frame(
@@ -29,7 +29,11 @@ def frame(
         ],
         width,
     )
-    title_rect = grid_rect(len(title), 1)
+    title_rect = grid_rect(len(title) + 1, 1)
     title_rect.midtop = rect.midtop
     pygame.draw.rect(screen, (0, 0, 0), title_rect)
     draw_text(screen, f"{title}", title_rect, color)
+    return pygame.Rect(
+        add(rect.topleft, (GRID_WIDTH / 2, GRID_HEIGHT)),
+        (rect.width - GRID_WIDTH, rect.height - 1.5 * GRID_HEIGHT),
+    )
