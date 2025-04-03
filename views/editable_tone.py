@@ -19,13 +19,15 @@ def editable_tone(
         for event in events:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_p:
-                    pass
-                    # value += 0.05
-                    # set_fun(value)
+                    if value is None:
+                        value = Tone()
+                    value.up(1)
+                    set_fun(value)
                 if event.key == pygame.K_o:
-                    pass
-                    # value -= 0.05
-                    # set_fun(value)
+                    if value is None:
+                        value = Tone()
+                    value.down(1)
+                    set_fun(value)
 
     if value is None:
         draw_text(screen, "---", rect)

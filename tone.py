@@ -27,6 +27,30 @@ class Tone:
     def __str__(self):
         return f"{SEMITONE_STR[self.__semitone]}{self.__octave}"
 
+    def up(self, n: int):
+        semitone = self.semitone
+        octave = self.octave
+
+        for _ in range(n):
+            if semitone == 2:
+                octave += 1
+            semitone = (semitone + 1) % 12
+
+        self.__semitone = semitone
+        self.__octave = octave
+
+    def down(self, n: int):
+        semitone = self.semitone
+        octave = self.octave
+
+        for _ in range(n):
+            if semitone == 3:
+                octave -= 1
+            semitone = (semitone - 1) % 12
+
+        self.__semitone = semitone
+        self.__octave = octave
+
 
 def tone_to_str(tone: Optional[Tone]):
     if tone is None:
