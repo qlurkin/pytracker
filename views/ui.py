@@ -1,3 +1,4 @@
+from typing import Optional
 import pygame
 import numpy as np
 
@@ -7,10 +8,12 @@ from engine import Engine
 from focus_manager import FocusManager, draw_focus
 from modulate import Modulate
 from pan import Pan
-from sequencer import Sequencer
+from sequencer import Sequencer, Step
 from sine_oscilator import SineOscilator
 from tone import Tone
 from value import Value
+from views.column import column
+from views.editable_tone import editable_tone
 from views.frame import frame
 from views.editable_value import editable_value
 from views.font import GRID_HEIGHT, draw_text, grid_rect
@@ -108,8 +111,39 @@ def ui(
         grid_rect(10, 1, (20, tempo_rect.top + 2 * GRID_HEIGHT)),
     )
 
-    inner = frame(focus_manager, screen, pygame.Rect(200, 200, 300, 200), "Truc")
-    pygame.draw.rect(screen, (255, 0, 0), inner)
+    inner = frame(
+        focus_manager, screen, pygame.Rect(200, 200, 300, 16 * GRID_HEIGHT), "Phrase"
+    )
+
+    track = sequencer.track[0]
+    chain = track[0]
+    assert chain is not None
+    phrase = chain[0]
+    assert phrase is not None
+
+    def set_tone(i: int):
+        def fun(tone: Optional[Tone]):
+            if tone is None:
+                phrase[i] = None
+                return
+            step = phrase[i]
+            if step is None:
+                phrase[i] = Step(tone)
+            else:
+                step.set_tone(tone)
+
+        return fun
+
+    def get_tone(i: int):
+        def fun() -> Optional[Tone]:
+            step = phrase[i]
+            if step is None:
+                return None
+            return step.get_tone()
+
+        return fun
+
+    column(focus_manager, screen, inner, editable_tone, 16, set_tone, get_tone, events)
 
     focused_rect = focus_manager.get_focused_rect()
 

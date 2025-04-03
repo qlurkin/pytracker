@@ -65,6 +65,12 @@ class Step:
             return
         self.__instrument = InstrumentInstance(instrument)
 
+    def get_tone(self) -> Tone:
+        return self.__tone
+
+    def set_tone(self, tone: Tone):
+        self.__tone = tone
+
 
 class Phrase:
     def __init__(self, id: int):
