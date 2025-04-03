@@ -1,5 +1,6 @@
+from __future__ import annotations
 from time import perf_counter as time
-from typing import Optional
+from typing import Optional, Protocol
 from ads import Ads
 from audio_node import AudioNode, an
 from config import NB_TRACKS
@@ -12,8 +13,8 @@ from value import Value
 
 
 class Instrument:
-    def __init__(self, id: int):
-        self.__id = id
+    def __init__(self):
+        pass
 
     def make_note(self, frequency) -> AudioNode:
         return an(
@@ -36,13 +37,13 @@ class Instrument:
 
 
 class InstrumentInstance:
-    def __init__(self, instrument: Instrument):
+    def __init__(self, id: int):
         # Table should probably be here
-        self.__instrument = instrument
+        self.__id = id
 
     @property
-    def instrument(self) -> Instrument:
-        return self.__instrument
+    def id(self) -> int:
+        return self.__id
 
 
 class Step:
@@ -50,20 +51,25 @@ class Step:
         self.__tone = tone
         self.__instrument: Optional[InstrumentInstance] = None
 
-    def play(self, track: int, engine: Engine):
-        if self.__instrument is None:
-            return
-        instrument = self.__instrument.instrument
-        node = instrument.make_note(self.__tone.frequency)
-        release = instrument.get_release()
-        hold = instrument.get_hold()
-        engine.add_note(track, node, release, hold)
+    # def play(self, track: int, engine: Engine):
+    #     if self.__instrument is None:
+    #         return
+    #     instrument = self.__instrument.instrument
+    #     node = instrument.make_note(self.__tone.frequency)
+    #     release = instrument.get_release()
+    #     hold = instrument.get_hold()
+    #     engine.add_note(track, node, release, hold)
 
-    def set_instrument(self, instrument: Optional[Instrument]):
-        if instrument is None:
+    def set_instrument(self, id: Optional[int]):
+        if id is None:
             self.__instrument = None
             return
-        self.__instrument = InstrumentInstance(instrument)
+        self.__instrument = InstrumentInstance(id)
+
+    def get_instrument(self) -> Optional[int]:
+        if self.__instrument is None:
+            return None
+        return self.__instrument.id
 
     def get_tone(self) -> Tone:
         return self.__tone
@@ -73,8 +79,7 @@ class Step:
 
 
 class Phrase:
-    def __init__(self, id: int):
-        self.__id = id
+    def __init__(self):
         self.__steps: list[Optional[Step]] = [None for _ in range(16)]
 
     def __getitem__(self, index: int) -> Optional[Step]:
@@ -88,120 +93,134 @@ class Phrase:
 
 
 class PhraseInstance:
-    def __init__(self, phrase: Phrase):
-        self.__phrase: Phrase = phrase
-        self.__cursor: int = 0
+    def __init__(self, id: int):
+        self.__id = id
 
     @property
-    def phrase(self):
-        return self.__phrase
+    def id(self):
+        return self.__id
 
-    def cursor_bump(self) -> bool:
-        self.__cursor += 1
-        res = False
-        if self.__cursor == len(self.__phrase):
-            self.__cursor = 0
-            res = True
-        return res
+    # def cursor_bump(self, max: int) -> bool:
+    #     self.__cursor += 1
+    #     res = False
+    #     if self.__cursor == max:
+    #         self.__cursor = 0
+    #         res = True
+    #     return res
 
-    def get_step(self) -> Optional[Step]:
-        return self.__phrase[self.__cursor]
+    # def get_step(self) -> Optional[Step]:
+    #     return self.__phrase[self.__cursor]
 
 
 class Chain:
-    def __init__(self, id: int):
-        self.__id = id
+    def __init__(self):
         self.__phrases: list[Optional[PhraseInstance]] = [None for _ in range(16)]
 
-    def __getitem__(self, index: int) -> Optional[Phrase]:
+    def __getitem__(self, index: int) -> Optional[int]:
         instance = self.__phrases[index]
         if instance is None:
             return None
-        return instance.phrase
+        return instance.id
 
     def get_instance(self, index: int) -> Optional[PhraseInstance]:
         return self.__phrases[index]
 
-    def __setitem__(self, index: int, phrase: Optional[Phrase]):
-        if phrase is None:
+    def __setitem__(self, index: int, phrase_id: Optional[int]):
+        if phrase_id is None:
             self.__phrases[index] = None
             return
-        self.__phrases[index] = PhraseInstance(phrase)
+        self.__phrases[index] = PhraseInstance(phrase_id)
 
     def __len__(self):
         return len(self.__phrases)
 
 
 class ChainInstance:
-    def __init__(self, chain: Chain):
-        self.__chain: Chain = chain
-        self.__cursor: int = 0
+    def __init__(self, id: int):
+        self.__id = id
 
     @property
-    def chain(self):
-        return self.__chain
+    def id(self):
+        return self.__id
 
-    def cursor_bump(self) -> bool:
-        instance = self.__chain.get_instance(self.__cursor)
-        if instance is None:
-            return False
-        if instance.cursor_bump():
-            self.__cursor += 1
-            if (
-                self.__cursor == len(self.__chain)
-                or self.__chain.get_instance(self.__cursor) is None
-            ):
-                self.__cursor = 0
-            return True
-        return False
-
-    def get_step(self) -> Optional[Step]:
-        instance = self.__chain.get_instance(self.__cursor)
-        if instance is not None:
-            return instance.get_step()
-        return None
+    # def cursor_bump(self) -> bool:
+    #     instance = self.__chain.get_instance(self.__cursor)
+    #     if instance is None:
+    #         return False
+    #     if instance.cursor_bump():
+    #         self.__cursor += 1
+    #         if (
+    #             self.__cursor == len(self.__chain)
+    #             or self.__chain.get_instance(self.__cursor) is None
+    #         ):
+    #             self.__cursor = 0
+    #         return True
+    #     return False
+    #
+    # def get_step(self) -> Optional[Step]:
+    #     instance = self.__chain.get_instance(self.__cursor)
+    #     if instance is not None:
+    #         return instance.get_step()
+    #     return None
 
 
 class Track:
     def __init__(self):
         self.__chains: list[Optional[ChainInstance]] = [None for _ in range(256)]
-        self.__cursor: int = 0
 
-    def cursor_bump(self) -> bool:
-        instance = self.__chains[self.__cursor]
-        if instance is None:
-            return False
-        if instance.cursor_bump():
-            self.__cursor += 1
-            if (
-                self.__cursor == len(self.__chains)
-                or self.__chains[self.__cursor] is None
-            ):
-                # TODO: should rewind to the first non None chain
-                self.__cursor = 0
-                return True
-        return False
+    # def cursor_bump(self) -> bool:
+    #     instance = self.__chains[self.__cursor]
+    #     if instance is None:
+    #         return False
+    #     if instance.cursor_bump():
+    #         self.__cursor += 1
+    #         if (
+    #             self.__cursor == len(self.__chains)
+    #             or self.__chains[self.__cursor] is None
+    #         ):
+    #             # TODO: should rewind to the first non None chain
+    #             self.__cursor = 0
+    #             return True
+    #     return False
+    #
+    # def get_step(self) -> Optional[Step]:
+    #     chain = self.__chains[self.__cursor]
+    #     if chain is not None:
+    #         return chain.get_step()
+    #     return None
 
-    def get_step(self) -> Optional[Step]:
-        chain = self.__chains[self.__cursor]
-        if chain is not None:
-            return chain.get_step()
-        return None
-
-    def __getitem__(self, index: int) -> Optional[Chain]:
+    def __getitem__(self, index: int) -> Optional[int]:
         instance = self.__chains[index]
         if instance is None:
             return None
-        return instance.chain
+        return instance.id
 
-    def __setitem__(self, index: int, chain: Optional[Chain]):
-        if chain is None:
+    def __setitem__(self, index: int, chain_id: Optional[int]):
+        if chain_id is None:
             self.__chains[index] = None
             return
-        self.__chains[index] = ChainInstance(chain)
+        self.__chains[index] = ChainInstance(chain_id)
 
     def __len__(self):
         return len(self.__chains)
+
+
+class Player(Protocol):
+    def step(self, sequencer: Sequencer) -> Optional[Step]: ...
+
+
+class PhrasePlayer:
+    def __init__(self, phrase_id: int):
+        self.__id = phrase_id
+        self.__cursor = 0
+
+    def step(self, sequencer: Sequencer):
+        self.__cursor = (self.__cursor + 1) % 16
+        phrase = sequencer.phrase[self.__id]
+        if phrase is None:
+            return
+        step = phrase[self.__cursor]
+        sequencer.play(0, step)
 
 
 class Sequencer:
@@ -217,16 +236,14 @@ class Sequencer:
         self.__chains: list[Optional[Chain]] = [None for _ in range(256)]
         self.__phrases: list[Optional[Phrase]] = [None for _ in range(256)]
         self.__instruments: list[Optional[Instrument]] = [None for _ in range(256)]
+        self.__player: Player = PhrasePlayer(0)
 
         ##### TEST #####
-        self.__instruments[0] = Instrument(0)
+        self.__instruments[0] = Instrument()
         step = Step(Tone())
-        step.set_instrument(self.instrument[0])
-        self.phrase[0] = Phrase(0)
+        step.set_instrument(0)
+        self.phrase[0] = Phrase()
         self.phrase[0][0] = step
-        self.chain[0] = Chain(0)
-        self.chain[0][0] = self.phrase[0]
-        self.track[0][0] = self.chain[0]
 
     @property
     def track(self):
@@ -253,19 +270,34 @@ class Sequencer:
     def tick_time(self):
         return 60 / (self.__tempo * 24)
 
-    def get_step(self, track: int) -> Optional[Step]:
-        return self.track[track].get_step()
-
-    def cursor_bump(self, track: int):
-        return self.track[track].cursor_bump()
+    # def get_step(self, track: int) -> Optional[Step]:
+    #     return self.__player.step(self)
+    #
+    # def cursor_bump(self, track: int):
+    #     return self.__player.bump(self)
 
     def step(self):
         self.step_count += 1
-        for i in range(NB_TRACKS):
-            self.cursor_bump(i)
-            step = self.get_step(i)
-            if step is not None:
-                step.play(i, self.__engine)
+        # for i in range(NB_TRACKS):
+        #     self.cursor_bump(i)
+        #     step = self.get_step(i)
+        #     if step is not None:
+        #         step.play(i, self.__engine)
+        self.__player.step(self)
+
+    def play(self, track: int, step: Optional[Step]):
+        if step is None:
+            return
+        inst_id = step.get_instrument()
+        if inst_id is None:
+            return
+        instrument = self.instrument[inst_id]
+        if instrument is None:
+            return
+        node = instrument.make_note(step.get_tone().frequency)
+        release = instrument.get_release()
+        hold = instrument.get_hold()
+        self.__engine.add_note(track, node, release, hold)
 
     def tick(self):
         self.__remaining_ticks_before_next_step -= 1

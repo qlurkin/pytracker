@@ -115,10 +115,7 @@ def ui(
         focus_manager, screen, pygame.Rect(200, 200, 300, 16 * GRID_HEIGHT), "Phrase"
     )
 
-    track = sequencer.track[0]
-    chain = track[0]
-    assert chain is not None
-    phrase = chain[0]
+    phrase = sequencer.phrase[0]
     assert phrase is not None
 
     def set_tone(i: int):
@@ -128,7 +125,9 @@ def ui(
                 return
             step = phrase[i]
             if step is None:
-                phrase[i] = Step(tone)
+                step = Step(tone)
+                step.set_instrument(0)
+                phrase[i] = step
             else:
                 step.set_tone(tone)
 
