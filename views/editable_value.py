@@ -1,3 +1,4 @@
+from typing import Callable, Any
 import pygame
 from focus_manager import FocusManager
 from .font import draw_text
@@ -7,8 +8,8 @@ def editable_value(
     focus_manager: FocusManager,
     screen: pygame.Surface,
     rect: pygame.Rect,
-    set_fun,
-    get_fun,
+    set_fun: Callable[[Any], None],
+    get_fun: Callable[[], Any],
     events: list[pygame.Event],
 ):
     focused = focus_manager(rect)
