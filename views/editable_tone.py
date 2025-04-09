@@ -1,8 +1,10 @@
 from typing import Callable, Optional
 import pygame
+from event import Event
 from focus_manager import FocusManager
 from tone import Tone
 from .font import draw_text
+from clipboard import ClipBoard
 
 
 def editable_tone(
@@ -11,22 +13,41 @@ def editable_tone(
     rect: pygame.Rect,
     set_fun: Callable[[Optional[Tone]], None],
     get_fun: Callable[[], Optional[Tone]],
-    events: list[pygame.Event],
+    events: list[Event],
 ):
     focused = focus_manager(rect)
     value: Optional[Tone] = get_fun()
     if focused:
         for event in events:
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_p:
-                    if value is None:
-                        value = Tone()
-                    value.up(1)
-                    set_fun(value)
-                if event.key == pygame.K_o:
-                    if value is None:
-                        value = Tone()
-                    value.down(1)
+            if event == Event.EditRight:
+                if value is None:
+                    value = ClipBoard.tone
+                value.up(1)
+                set_fun(value)
+                ClipBoard.tone = value
+            if event == Event.EditLeft:
+                if value is None:
+                    value = ClipBoard.tone
+                value.down(1)
+                set_fun(value)
+                ClipBoard.tone = value
+            if event == Event.EditUp:
+                if value is None:
+                    value = ClipBoard.tone
+                value.up(12)
+                set_fun(value)
+                ClipBoard.tone = value
+            if event == Event.EditDown:
+                if value is None:
+                    value = ClipBoard.tone
+                value.down(12)
+                set_fun(value)
+                ClipBoard.tone = value
+            if event == Event.Clear:
+                set_fun(None)
+            if event == Event.Edit:
+                if value is None:
+                    value = ClipBoard.tone
                     set_fun(value)
 
     if value is None:

@@ -5,6 +5,7 @@ import numpy as np
 from ads import Ads
 from audio_node import an
 from engine import Engine
+from event import Event
 from focus_manager import FocusManager, draw_focus
 from modulate import Modulate
 from pan import Pan
@@ -26,49 +27,31 @@ focus_manager = FocusManager()
 def ui(
     screen: pygame.Surface,
     rect: pygame.Rect,
-    events: list[pygame.Event],
+    events: list[Event],
     engine: Engine,
     sequencer: Sequencer,
 ):
     for event in events:
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_UP:
-                focus_manager.up()
-            if event.key == pygame.K_DOWN:
-                focus_manager.down()
-            if event.key == pygame.K_LEFT:
-                focus_manager.left()
-            if event.key == pygame.K_RIGHT:
-                focus_manager.right()
-            if event.key == pygame.K_b:
-                engine.add_note(
-                    5,
-                    an(
-                        Modulate(
-                            an(Pan(an(SineOscilator(440)), an(Value(0.5)))),
-                            an(Ads(0.01, 0.1, 0.8)),
-                        )
-                    ),
-                    0.5,
-                    0.5,
-                )
-            if event.key == pygame.K_v:
-                engine.add_note(
-                    3,
-                    an(
-                        Modulate(
-                            an(
-                                Pan(
-                                    an(SineOscilator(Tone(6, 4).frequency)),
-                                    an(Value(0.5)),
-                                )
-                            ),
-                            an(Ads(0.01, 0.1, 0.8)),
-                        )
-                    ),
-                    0.5,
-                    0.5,
-                )
+        if event == Event.MoveUp:
+            focus_manager.up()
+        if event == Event.MoveDown:
+            focus_manager.down()
+        if event == Event.MoveLeft:
+            focus_manager.left()
+        if event == Event.MoveRight:
+            focus_manager.right()
+        if event == Event.Play:
+            engine.add_note(
+                5,
+                an(
+                    Modulate(
+                        an(Pan(an(SineOscilator(440)), an(Value(0.5)))),
+                        an(Ads(0.01, 0.1, 0.8)),
+                    )
+                ),
+                0.5,
+                0.5,
+            )
 
     focus_manager.begin_frame()
 

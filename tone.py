@@ -1,7 +1,7 @@
 from typing import Optional
 
 
-SEMITONE_STR = ["A-", "A#", "B-", "C-", "C#", "D-", "D#", "E-", "F-", "F#", "G-", "G#"]
+SEMITONE_STR = ["C-", "C#", "D-", "D#", "E-", "F-", "F#", "G-", "G#", "A-", "A#", "B-"]
 
 
 class Tone:
@@ -21,7 +21,7 @@ class Tone:
     def frequency(self):
         base_frequency = 440
         semitone_ratio = 2 ** (1 / 12)
-        semitone_diff = (self.__octave - 4) * 12 + self.__semitone
+        semitone_diff = (self.__octave - 4) * 12 + self.__semitone - 9
         return base_frequency * semitone_ratio**semitone_diff
 
     def __str__(self):
@@ -32,7 +32,7 @@ class Tone:
         octave = self.octave
 
         for _ in range(n):
-            if semitone == 2:
+            if semitone == 11:
                 octave += 1
             semitone = (semitone + 1) % 12
 
@@ -44,7 +44,7 @@ class Tone:
         octave = self.octave
 
         for _ in range(n):
-            if semitone == 3:
+            if semitone == 0:
                 octave -= 1
             semitone = (semitone - 1) % 12
 

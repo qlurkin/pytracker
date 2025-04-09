@@ -1,5 +1,6 @@
 from typing import Any, Callable
 import pygame
+from event import Event
 from focus_manager import FocusManager
 
 
@@ -14,14 +15,14 @@ def column(
             pygame.Rect,
             Callable[[Any], None],
             Callable[[], Any],
-            list[pygame.Event],
+            list[Event],
         ],
         Any,
     ],
     size: int,
     set_fun: Callable[[int], Callable[[Any], None]],
     get_fun: Callable[[int], Callable[[], Any]],
-    events: list[pygame.Event],
+    events: list[Event],
 ):
     width = rect.width
     height = rect.height / size
