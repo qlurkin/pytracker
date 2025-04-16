@@ -35,4 +35,7 @@ def editable_byte(
                 value = clamp(value, 0, 255)
                 set_fun(value)
 
-    draw_text(screen, f"{value:0>2x}", rect)
+    if value is None:
+        draw_text(screen, "--", rect)
+    else:
+        draw_text(screen, f"{value:0>2x}", rect)

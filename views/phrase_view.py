@@ -76,5 +76,6 @@ def phrase_view(
 
     focused_rect = local_focus.get_focused_rect()
 
-    if focused_rect is not None:
-        draw_focus(screen, focused_rect)
+    if focused:
+        if focused_rect is not None:
+            draw_focus(screen, focused_rect)

@@ -244,6 +244,9 @@ class Sequencer:
         step.set_instrument(0)
         self.phrase[0] = Phrase()
         self.phrase[0][0] = step
+        chain = Chain()
+        chain[0] = 0
+        self.chain[0] = chain
 
     @property
     def track(self):
