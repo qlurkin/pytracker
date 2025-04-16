@@ -10,7 +10,7 @@ from scheduler import Scheduler
 from value import Value
 
 
-GRAPH_SIZE = 2048
+GRAPH_SIZE = 2**11
 
 
 class Engine(AudioNode):
