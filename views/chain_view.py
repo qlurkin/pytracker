@@ -1,17 +1,16 @@
 import pygame
-from sequencer import Sequencer, Step
+from sequencer import Sequencer
 from event import Event
 from focus_manager import FocusManager, draw_focus
 from typing import Optional
-from tone import Tone
+from views.editable_byte import editable_byte
 from views.frame import frame
-from views.editable_tone import editable_tone
 from views.column import column
 
 local_focus = FocusManager()
 
 
-def phrase_view(
+def chain_view(
     global_focus: FocusManager,
     screen: pygame.Surface,
     rect: pygame.Rect,
@@ -39,39 +38,34 @@ def phrase_view(
 
     local_focus.begin_frame()
 
-    inner = frame(focused, screen, rect, f"Phrase {id:0>2}")
+    inner = frame(focused, screen, rect, f"Chain {id:0>2}")
 
-    phrase = sequencer.phrase[id]
+    chain = sequencer.chain[id]
 
-    def set_tone(i: int):
-        def fun(tone: Optional[Tone]):
-            assert phrase is not None
-            if tone is None:
-                phrase[i] = None
-                return
-            step = phrase[i]
-            if step is None:
-                step = Step(tone)
-                step.set_instrument(0)
-                phrase[i] = step
-            else:
-                step.set_tone(tone)
+    def set_phrase(i: int):
+        def fun(phrase_id: Optional[int]):
+            assert chain is not None
+            chain[i] = phrase_id
 
         return fun
 
-    def get_tone(i: int):
-        def fun() -> Optional[Tone]:
-            assert phrase is not None
-            step = phrase[i]
-            if step is None:
-                return None
-            return step.get_tone()
+    def get_phrase(i: int):
+        def fun() -> Optional[int]:
+            assert chain is not None
+            return chain[i]
 
         return fun
 
-    if phrase is not None:
+    if chain is not None:
         column(
-            local_focus, screen, inner, editable_tone, 16, set_tone, get_tone, events
+            local_focus,
+            screen,
+            inner,
+            editable_byte,
+            16,
+            set_phrase,
+            get_phrase,
+            events,
         )
 
     focused_rect = local_focus.get_focused_rect()

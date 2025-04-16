@@ -25,6 +25,10 @@ def add(a, b):
     return (a[0] + b[0], a[1] + b[1])
 
 
+def clamp(value, smallest, largest):
+    return max(smallest, min(value, largest))
+
+
 def get_freq(samples) -> float:
     freqs = np.fft.rfftfreq(len(samples), 1 / SAMPLE_RATE)
     sp = np.fft.rfft(samples)

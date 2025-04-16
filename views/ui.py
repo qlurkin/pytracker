@@ -11,6 +11,7 @@ from pan import Pan
 from sequencer import Sequencer
 from sine_oscilator import SineOscilator
 from value import Value
+from views.chain_view import chain_view
 from views.font import GRID_HEIGHT, draw_text, grid_rect
 from views.output_monitor import output_monitor
 from views.phrase_view import phrase_view
@@ -65,10 +66,19 @@ def ui(
 
     output_monitor(screen, output_monitor_rect, engine)
 
+    chain_view(
+        focus_manager,
+        screen,
+        pygame.Rect(0, 200, 300, 16 * GRID_HEIGHT),
+        sequencer,
+        0,
+        events,
+    )
+
     phrase_view(
         focus_manager,
         screen,
-        pygame.Rect(200, 200, 300, 16 * GRID_HEIGHT),
+        pygame.Rect(300, 200, 300, 16 * GRID_HEIGHT),
         sequencer,
         0,
         events,

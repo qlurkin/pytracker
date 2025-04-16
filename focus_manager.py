@@ -100,7 +100,7 @@ class FocusManager:
         best = float("inf")
         cur = self.get_focused_rect()
         if cur is None:
-            return True
+            return False
         for i, rect in enumerate(self.__rects):
             dist = dist_fn(cur, rect)
             if dist < best:
