@@ -36,7 +36,7 @@ def freq_to_tone(freq: float) -> Optional[Tone]:
     if freq == 0:
         return None
     n = 12 * np.log2(freq / 440)
-    closest_n = round(n)
+    closest_n = round(n) + 9
     return Tone(closest_n % 12, 4 + closest_n // 12)
 
 
