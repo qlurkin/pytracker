@@ -24,8 +24,9 @@ KEYMAP = {
     pygame.K_RIGHT: Key.Right,
     pygame.K_z: Key.Edit,
     pygame.K_x: Key.Option,
-    pygame.K_c: Key.Shift,
-    pygame.K_v: Key.Play,
+    pygame.K_LSHIFT: Key.Shift,
+    pygame.K_RSHIFT: Key.Shift,
+    pygame.K_c: Key.Play,
 }
 
 NO_HELD_EVENTS = {
