@@ -95,20 +95,23 @@ class FocusManager:
         self.__index += 1
         return res
 
-    def search(self, dist_fn):
+    def search(self, dist_fn) -> bool:
         next = self.__focused
         best = float("inf")
         cur = self.get_focused_rect()
         if cur is None:
-            return
+            return True
         for i, rect in enumerate(self.__rects):
             dist = dist_fn(cur, rect)
             if dist < best:
                 best = dist
                 next = i
+        if next == self.__focused:
+            return False
         self.__focused = next
+        return True
 
-    def up(self):
+    def up(self) -> bool:
         def dist(f: pygame.Rect, t: pygame.Rect):
             xt, yt = t.center
             xf, yf = f.center
@@ -116,9 +119,9 @@ class FocusManager:
                 return 2 * abs(xt - xf) + abs(yt - yf)
             return float("inf")
 
-        self.search(dist)
+        return self.search(dist)
 
-    def down(self):
+    def down(self) -> bool:
         def dist(f: pygame.Rect, t: pygame.Rect):
             xt, yt = t.center
             xf, yf = f.center
@@ -126,9 +129,9 @@ class FocusManager:
                 return 2 * abs(xt - xf) + abs(yt - yf)
             return float("inf")
 
-        self.search(dist)
+        return self.search(dist)
 
-    def right(self):
+    def right(self) -> bool:
         def dist(f: pygame.Rect, t: pygame.Rect):
             xt, yt = t.center
             xf, yf = f.center
@@ -136,9 +139,9 @@ class FocusManager:
                 return abs(xt - xf) + 2 * abs(yt - yf)
             return float("inf")
 
-        self.search(dist)
+        return self.search(dist)
 
-    def left(self):
+    def left(self) -> bool:
         def dist(f: pygame.Rect, t: pygame.Rect):
             xt, yt = t.center
             xf, yf = f.center
@@ -146,7 +149,7 @@ class FocusManager:
                 return abs(xt - xf) + 2 * abs(yt - yf)
             return float("inf")
 
-        self.search(dist)
+        return self.search(dist)
 
     def get_focused_rect(self) -> Optional[pygame.Rect]:
         if len(self.__rects) == 0:

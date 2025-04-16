@@ -19,17 +19,22 @@ def phrase_view(
     events: list[Event],
 ):
     focused = global_focus(rect)
+    if not focused:
+        events = []
 
-    if focused:
-        for event in events:
-            if event == Event.MoveUp:
-                local_focus.up()
-            if event == Event.MoveDown:
-                local_focus.down()
-            if event == Event.MoveLeft:
-                local_focus.left()
-            if event == Event.MoveRight:
-                local_focus.right()
+    for event in events:
+        if event == Event.MoveUp:
+            if not local_focus.up():
+                global_focus.up()
+        if event == Event.MoveDown:
+            if not local_focus.down():
+                global_focus.down()
+        if event == Event.MoveLeft:
+            if not local_focus.left():
+                global_focus.left()
+        if event == Event.MoveRight:
+            if not local_focus.right():
+                global_focus.right()
 
     local_focus.begin_frame()
 
