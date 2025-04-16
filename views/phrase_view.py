@@ -1,0 +1,70 @@
+import pygame
+from sequencer import Sequencer, Step
+from event import Event
+from focus_manager import FocusManager, draw_focus
+from typing import Optional
+from tone import Tone
+from views.frame import frame
+from views.editable_tone import editable_tone
+from views.column import column
+
+local_focus = FocusManager()
+
+
+def phrase_view(
+    global_focus: FocusManager,
+    screen: pygame.Surface,
+    rect: pygame.Rect,
+    sequencer: Sequencer,
+    events: list[Event],
+):
+    focused = global_focus(rect)
+
+    if focused:
+        for event in events:
+            if event == Event.MoveUp:
+                local_focus.up()
+            if event == Event.MoveDown:
+                local_focus.down()
+            if event == Event.MoveLeft:
+                local_focus.left()
+            if event == Event.MoveRight:
+                local_focus.right()
+
+    local_focus.begin_frame()
+
+    inner = frame(focused, screen, rect, "Phrase")
+
+    phrase = sequencer.phrase[0]
+    assert phrase is not None
+
+    def set_tone(i: int):
+        def fun(tone: Optional[Tone]):
+            if tone is None:
+                phrase[i] = None
+                return
+            step = phrase[i]
+            if step is None:
+                step = Step(tone)
+                step.set_instrument(0)
+                phrase[i] = step
+            else:
+                step.set_tone(tone)
+
+        return fun
+
+    def get_tone(i: int):
+        def fun() -> Optional[Tone]:
+            step = phrase[i]
+            if step is None:
+                return None
+            return step.get_tone()
+
+        return fun
+
+    column(local_focus, screen, inner, editable_tone, 16, set_tone, get_tone, events)
+
+    focused_rect = local_focus.get_focused_rect()
+
+    if focused_rect is not None:
+        draw_focus(screen, focused_rect)

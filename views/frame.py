@@ -1,16 +1,14 @@
 import pygame
-from focus_manager import FocusManager
 from util import add
 from .font import GRID_HEIGHT, draw_text, grid_rect, GRID_WIDTH
 
 
 def frame(
-    focus_manager: FocusManager,
+    focused: bool,
     screen: pygame.Surface,
     rect: pygame.Rect,
     title: str,
 ):
-    focused = focus_manager(rect)
     if focused:
         color = (255, 255, 255)
         width = 2

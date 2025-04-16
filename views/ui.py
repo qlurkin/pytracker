@@ -12,6 +12,7 @@ from pan import Pan
 from sequencer import Sequencer, Step
 from sine_oscilator import SineOscilator
 from tone import Tone
+import util
 from value import Value
 from views.column import column
 from views.editable_tone import editable_tone
@@ -19,6 +20,7 @@ from views.frame import frame
 from views.editable_value import editable_value
 from views.font import GRID_HEIGHT, draw_text, grid_rect
 from views.output_monitor import output_monitor
+from views.phrase_view import phrase_view
 from views.scope import scope
 
 focus_manager = FocusManager()
@@ -32,13 +34,13 @@ def ui(
     sequencer: Sequencer,
 ):
     for event in events:
-        if event == Event.MoveUp:
+        if event == Event.ShiftMoveUp:
             focus_manager.up()
-        if event == Event.MoveDown:
+        if event == Event.ShiftMoveDown:
             focus_manager.down()
-        if event == Event.MoveLeft:
+        if event == Event.ShiftMoveLeft:
             focus_manager.left()
-        if event == Event.MoveRight:
+        if event == Event.ShiftMoveRight:
             focus_manager.right()
         if event == Event.Play:
             engine.add_note(
@@ -94,38 +96,52 @@ def ui(
         grid_rect(10, 1, (20, tempo_rect.top + 2 * GRID_HEIGHT)),
     )
 
-    inner = frame(
-        focus_manager, screen, pygame.Rect(200, 200, 300, 16 * GRID_HEIGHT), "Phrase"
+    draw_text(
+        screen,
+        f"{util.get_freq(np.max(engine.get_track_graph(0), axis=0)):.2f}",
+        grid_rect(10, 1, (20, tempo_rect.top + 3 * GRID_HEIGHT)),
     )
 
-    phrase = sequencer.phrase[0]
-    assert phrase is not None
+    # inner = frame(
+    #     focus_manager, screen, pygame.Rect(200, 200, 300, 16 * GRID_HEIGHT), "Phrase"
+    # )
+    #
+    # phrase = sequencer.phrase[0]
+    # assert phrase is not None
+    #
+    # def set_tone(i: int):
+    #     def fun(tone: Optional[Tone]):
+    #         if tone is None:
+    #             phrase[i] = None
+    #             return
+    #         step = phrase[i]
+    #         if step is None:
+    #             step = Step(tone)
+    #             step.set_instrument(0)
+    #             phrase[i] = step
+    #         else:
+    #             step.set_tone(tone)
+    #
+    #     return fun
+    #
+    # def get_tone(i: int):
+    #     def fun() -> Optional[Tone]:
+    #         step = phrase[i]
+    #         if step is None:
+    #             return None
+    #         return step.get_tone()
+    #
+    #     return fun
+    #
+    # column(focus_manager, screen, inner, editable_tone, 16, set_tone, get_tone, events)
 
-    def set_tone(i: int):
-        def fun(tone: Optional[Tone]):
-            if tone is None:
-                phrase[i] = None
-                return
-            step = phrase[i]
-            if step is None:
-                step = Step(tone)
-                step.set_instrument(0)
-                phrase[i] = step
-            else:
-                step.set_tone(tone)
-
-        return fun
-
-    def get_tone(i: int):
-        def fun() -> Optional[Tone]:
-            step = phrase[i]
-            if step is None:
-                return None
-            return step.get_tone()
-
-        return fun
-
-    column(focus_manager, screen, inner, editable_tone, 16, set_tone, get_tone, events)
+    phrase_view(
+        focus_manager,
+        screen,
+        pygame.Rect(200, 200, 300, 16 * GRID_HEIGHT),
+        sequencer,
+        events,
+    )
 
     focused_rect = focus_manager.get_focused_rect()
 
