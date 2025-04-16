@@ -16,6 +16,7 @@ def phrase_view(
     screen: pygame.Surface,
     rect: pygame.Rect,
     sequencer: Sequencer,
+    id: int,
     events: list[Event],
 ):
     focused = global_focus(rect)
@@ -40,7 +41,7 @@ def phrase_view(
 
     inner = frame(focused, screen, rect, "Phrase")
 
-    phrase = sequencer.phrase[0]
+    phrase = sequencer.phrase[id]
     assert phrase is not None
 
     def set_tone(i: int):

@@ -70,5 +70,6 @@ def ui(
         screen,
         pygame.Rect(200, 200, 300, 16 * GRID_HEIGHT),
         sequencer,
+        0,
         events,
     )
