@@ -4,7 +4,6 @@ from event import Event
 from focus_manager import FocusManager
 from tone import Tone
 from .font import draw_text
-from clipboard import ClipBoard
 
 
 def editable_tone(
@@ -13,6 +12,7 @@ def editable_tone(
     rect: pygame.Rect,
     set_fun: Callable[[Optional[Tone]], None],
     get_fun: Callable[[], Optional[Tone]],
+    default: Callable[[], Tone],
     events: list[Event],
 ) -> bool:
     focused = focus_manager(rect)
@@ -20,34 +20,26 @@ def editable_tone(
     if focused:
         for event in events:
             if event == Event.EditRight:
-                if value is None:
-                    value = ClipBoard.tone
+                assert value is not None
                 value.up(1)
                 set_fun(value)
-                ClipBoard.tone = value
             if event == Event.EditLeft:
-                if value is None:
-                    value = ClipBoard.tone
+                assert value is not None
                 value.down(1)
                 set_fun(value)
-                ClipBoard.tone = value
             if event == Event.EditUp:
-                if value is None:
-                    value = ClipBoard.tone
+                assert value is not None
                 value.up(12)
                 set_fun(value)
-                ClipBoard.tone = value
             if event == Event.EditDown:
-                if value is None:
-                    value = ClipBoard.tone
+                assert value is not None
                 value.down(12)
                 set_fun(value)
-                ClipBoard.tone = value
             if event == Event.Clear:
                 set_fun(None)
             if event == Event.Edit:
                 if value is None:
-                    value = ClipBoard.tone
+                    value = default()
                     set_fun(value)
 
     if value is None:

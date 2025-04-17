@@ -5,6 +5,7 @@ from copy import copy
 class __ClipboardClass:
     def __init__(self):
         self.__tone = Tone()
+        self.phrase_id = 0
 
     @property
     def tone(self):

@@ -12,6 +12,7 @@ def editable_byte(
     rect: pygame.Rect,
     set_fun: Callable[[Any], None],
     get_fun: Callable[[], Any],
+    default: Callable[[], Any],
     events: list[Event],
 ) -> bool:
     focused = focus_manager(rect)
@@ -36,7 +37,7 @@ def editable_byte(
                 set_fun(value)
             if event == Event.Edit:
                 if value is None:
-                    value = 0
+                    value = default()
                     set_fun(value)
 
     if value is None:

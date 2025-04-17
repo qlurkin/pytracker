@@ -1,4 +1,5 @@
 import pygame
+from clipboard import ClipBoard
 from sequencer import Sequencer
 from event import Event
 from focus_manager import FocusManager, draw_focus
@@ -44,10 +45,15 @@ def chain_view(
 
     chain = sequencer.chain[id]
 
+    def default() -> int:
+        return ClipBoard.phrase_id
+
     def set_phrase(i: int):
         def fun(phrase_id: Optional[int]):
             assert chain is not None
             chain[i] = phrase_id
+            if phrase_id is not None:
+                ClipBoard.phrase_id = phrase_id
 
         return fun
 
@@ -67,6 +73,7 @@ def chain_view(
             16,
             set_phrase,
             get_phrase,
+            default,
             events,
         )
 

@@ -1,4 +1,5 @@
 import pygame
+from clipboard import ClipBoard
 from sequencer import Phrase, Sequencer, Step
 from event import Event
 from focus_manager import FocusManager, draw_focus
@@ -47,9 +48,14 @@ def phrase_view(
 
     phrase = sequencer.phrase[id]
 
+    def default() -> Tone:
+        return ClipBoard.tone
+
     def set_tone(i: int):
         def fun(tone: Optional[Tone]):
             assert phrase is not None
+            if tone is not None:
+                ClipBoard.tone = tone
             if tone is None:
                 phrase[i] = None
                 return
@@ -75,7 +81,15 @@ def phrase_view(
 
     if phrase is not None:
         column(
-            local_focus, screen, inner, editable_tone, 16, set_tone, get_tone, events
+            local_focus,
+            screen,
+            inner,
+            editable_tone,
+            16,
+            set_tone,
+            get_tone,
+            default,
+            events,
         )
     else:
         draw_text(screen, "NONE", inner)
