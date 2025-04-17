@@ -207,6 +207,9 @@ class Track:
 
 class Player(Protocol):
     def step(self, sequencer: Sequencer, track: int) -> bool: ...
+    def get_phrase_cursor(self) -> Optional[tuple[int, int]]: ...
+    def get_chain_cursor(self) -> Optional[tuple[int, int]]: ...
+    def get_track_cursor(self) -> Optional[tuple[int, int]]: ...
 
 
 class PhrasePlayer:
@@ -224,6 +227,15 @@ class PhrasePlayer:
         if self.__cursor == 0:
             res = True
         return res
+
+    def get_phrase_cursor(self) -> Optional[tuple[int, int]]:
+        return (self.__id, self.__cursor)
+
+    def get_chain_cursor(self) -> Optional[tuple[int, int]]:
+        return None
+
+    def get_track_cursor(self) -> Optional[tuple[int, int]]:
+        return None
 
 
 class ChainPlayer:
@@ -248,8 +260,22 @@ class ChainPlayer:
             if chain[self.__cursor] is None:
                 self.__cursor = 0
                 res = True
+                phrase_id = chain[self.__cursor]
+                if phrase_id is not None:
+                    self.__phrase_player = PhrasePlayer(phrase_id)
             return res
         return False
+
+    def get_phrase_cursor(self) -> Optional[tuple[int, int]]:
+        if self.__phrase_player is None:
+            return None
+        return self.__phrase_player.get_phrase_cursor()
+
+    def get_chain_cursor(self) -> Optional[tuple[int, int]]:
+        return (self.__id, self.__cursor)
+
+    def get_track_cursor(self) -> Optional[tuple[int, int]]:
+        return None
 
 
 class Sequencer:
@@ -292,6 +318,10 @@ class Sequencer:
     @property
     def instrument(self):
         return self.__instruments
+
+    @property
+    def player(self):
+        return self.__player
 
     def get_tempo(self):
         return self.__tempo

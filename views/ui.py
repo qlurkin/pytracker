@@ -78,7 +78,7 @@ def ui(
     chain_view(
         focus_manager,
         screen,
-        pygame.Rect(0, 200, 300, 16 * GRID_HEIGHT),
+        pygame.Rect(0, 200, 300, 17.5 * GRID_HEIGHT),
         sequencer,
         0,
         events,
@@ -87,7 +87,7 @@ def ui(
     phrase_view(
         focus_manager,
         screen,
-        pygame.Rect(300, 200, 300, 16 * GRID_HEIGHT),
+        pygame.Rect(300, 200, 300, 17.5 * GRID_HEIGHT),
         sequencer,
         ui_state.phrase_id,
         events,

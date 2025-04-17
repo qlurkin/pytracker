@@ -4,8 +4,9 @@ from sequencer import Sequencer
 from event import Event
 from focus_manager import FocusManager, draw_focus
 from typing import Optional
+from views.cursor_column import cursor_column
 from views.editable_byte import editable_byte
-from views.font import draw_text
+from views.font import draw_text, grid_rect
 from views.frame import frame
 from views.column import column
 import views.ui as ui
@@ -64,11 +65,26 @@ def chain_view(
 
         return fun
 
+    chain_cursor = sequencer.player.get_chain_cursor()
+
+    def cursor_here(i: int) -> bool:
+        if chain_cursor is None:
+            return False
+        chain_id, cursor = chain_cursor
+        if chain_id == id:
+            return cursor == i
+        return False
+
     if chain is not None:
+        cursor_column_rect = grid_rect(1, 16)
+        cursor_column_rect.topleft = inner.topleft
+        cursor_column(screen, cursor_column_rect, cursor_here, 16)
+        phrase_rect = grid_rect(2, 16)
+        phrase_rect.topleft = cursor_column_rect.topright
         focused_slot = column(
             local_focus,
             screen,
-            inner,
+            phrase_rect,
             editable_byte,
             16,
             set_phrase,

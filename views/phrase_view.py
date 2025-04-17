@@ -5,7 +5,8 @@ from event import Event
 from focus_manager import FocusManager, draw_focus
 from typing import Optional
 from tone import Tone
-from views.font import draw_text
+from views.cursor_column import cursor_column
+from views.font import draw_text, grid_rect
 from views.frame import frame
 from views.editable_tone import editable_tone
 from views.column import column
@@ -79,11 +80,26 @@ def phrase_view(
 
         return fun
 
+    phrase_cursor = sequencer.player.get_phrase_cursor()
+
+    def cursor_here(i: int) -> bool:
+        if phrase_cursor is None:
+            return False
+        phrase_id, cursor = phrase_cursor
+        if phrase_id == id:
+            return i == cursor
+        return False
+
     if phrase is not None:
+        cursor_column_rect = grid_rect(1, 16)
+        cursor_column_rect.topleft = inner.topleft
+        cursor_column(screen, cursor_column_rect, cursor_here, 16)
+        tone_column_rect = grid_rect(3, 16)
+        tone_column_rect.topleft = cursor_column_rect.topright
         column(
             local_focus,
             screen,
-            inner,
+            tone_column_rect,
             editable_tone,
             16,
             set_tone,
@@ -91,6 +107,7 @@ def phrase_view(
             default,
             events,
         )
+
     else:
         draw_text(screen, "NONE", inner)
 
