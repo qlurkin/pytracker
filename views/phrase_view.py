@@ -1,5 +1,5 @@
 import pygame
-from sequencer import Sequencer, Step
+from sequencer import Phrase, Sequencer, Step
 from event import Event
 from focus_manager import FocusManager, draw_focus
 from typing import Optional
@@ -23,6 +23,9 @@ def phrase_view(
     focused = global_focus(rect)
     if not focused:
         events = []
+    else:
+        if sequencer.phrase[id] is None:
+            sequencer.phrase[id] = Phrase()
 
     for event in events:
         if event == Event.MoveUp:
