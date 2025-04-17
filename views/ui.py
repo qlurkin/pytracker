@@ -1,5 +1,6 @@
 import pygame
 import numpy as np
+from dataclasses import dataclass
 
 from ads import Ads
 from audio_node import an
@@ -18,6 +19,14 @@ from views.phrase_view import phrase_view
 from views.scope import scope
 
 focus_manager = FocusManager()
+
+
+@dataclass
+class UiState:
+    phrase_id: int = 0
+
+
+ui_state = UiState()
 
 
 def ui(
@@ -80,6 +89,6 @@ def ui(
         screen,
         pygame.Rect(300, 200, 300, 16 * GRID_HEIGHT),
         sequencer,
-        0,
+        ui_state.phrase_id,
         events,
     )

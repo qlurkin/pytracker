@@ -4,8 +4,10 @@ from event import Event
 from focus_manager import FocusManager, draw_focus
 from typing import Optional
 from views.editable_byte import editable_byte
+from views.font import draw_text
 from views.frame import frame
 from views.column import column
+import views.ui as ui
 
 local_focus = FocusManager()
 
@@ -57,7 +59,7 @@ def chain_view(
         return fun
 
     if chain is not None:
-        column(
+        focused_slot = column(
             local_focus,
             screen,
             inner,
@@ -67,6 +69,12 @@ def chain_view(
             get_phrase,
             events,
         )
+
+        phrase_id = chain[focused_slot]
+        if phrase_id is not None:
+            ui.ui_state.phrase_id = phrase_id
+    else:
+        draw_text(screen, "NONE", inner)
 
     focused_rect = local_focus.get_focused_rect()
 

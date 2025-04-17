@@ -4,6 +4,7 @@ from event import Event
 from focus_manager import FocusManager, draw_focus
 from typing import Optional
 from tone import Tone
+from views.font import draw_text
 from views.frame import frame
 from views.editable_tone import editable_tone
 from views.column import column
@@ -73,6 +74,8 @@ def phrase_view(
         column(
             local_focus, screen, inner, editable_tone, 16, set_tone, get_tone, events
         )
+    else:
+        draw_text(screen, "NONE", inner)
 
     focused_rect = local_focus.get_focused_rect()
 

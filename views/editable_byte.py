@@ -13,7 +13,7 @@ def editable_byte(
     set_fun: Callable[[Any], None],
     get_fun: Callable[[], Any],
     events: list[Event],
-):
+) -> bool:
     focused = focus_manager(rect)
     value = get_fun()
     if focused:
@@ -34,8 +34,14 @@ def editable_byte(
                 value -= 16
                 value = clamp(value, 0, 255)
                 set_fun(value)
+            if event == Event.Edit:
+                if value is None:
+                    value = 0
+                    set_fun(value)
 
     if value is None:
         draw_text(screen, "--", rect)
     else:
         draw_text(screen, f"{value:0>2x}", rect)
+
+    return focused

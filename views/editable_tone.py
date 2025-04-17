@@ -14,7 +14,7 @@ def editable_tone(
     set_fun: Callable[[Optional[Tone]], None],
     get_fun: Callable[[], Optional[Tone]],
     events: list[Event],
-):
+) -> bool:
     focused = focus_manager(rect)
     value: Optional[Tone] = get_fun()
     if focused:
@@ -54,3 +54,5 @@ def editable_tone(
         draw_text(screen, "---", rect)
     else:
         draw_text(screen, str(value), rect)
+
+    return focused

@@ -17,17 +17,20 @@ def column(
             Callable[[], Any],
             list[Event],
         ],
-        Any,
+        bool,
     ],
     size: int,
     set_fun: Callable[[int], Callable[[Any], None]],
     get_fun: Callable[[int], Callable[[], Any]],
     events: list[Event],
-):
+) -> int:
     width = rect.width
     height = rect.height / size
     top = rect.top
+    res = 0
     for i in range(size):
         rect_i = pygame.Rect((rect.left, top, width, height))
-        view(focus_manager, screen, rect_i, set_fun(i), get_fun(i), events)
+        if view(focus_manager, screen, rect_i, set_fun(i), get_fun(i), events):
+            res = i
         top = rect_i.bottom
+    return res
