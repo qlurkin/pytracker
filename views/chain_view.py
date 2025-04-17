@@ -9,6 +9,7 @@ from views.editable_byte import editable_byte
 from views.font import draw_text, grid_rect
 from views.frame import frame
 from views.column import column
+from views.number_column import number_column
 import views.ui as ui
 
 local_focus = FocusManager()
@@ -76,8 +77,11 @@ def chain_view(
         return False
 
     if chain is not None:
+        number_column_rect = grid_rect(1, 16)
+        number_column_rect.topleft = inner.topleft
+        number_column(screen, number_column_rect, 16, 1)
         cursor_column_rect = grid_rect(1, 16)
-        cursor_column_rect.topleft = inner.topleft
+        cursor_column_rect.topleft = number_column_rect.topright
         cursor_column(screen, cursor_column_rect, cursor_here, 16)
         phrase_rect = grid_rect(2, 16)
         phrase_rect.topleft = cursor_column_rect.topright
