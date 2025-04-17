@@ -206,7 +206,7 @@ class Track:
 
 
 class Player(Protocol):
-    def step(self, sequencer: Sequencer) -> Optional[Step]: ...
+    def step(self, sequencer: Sequencer, track: int) -> bool: ...
 
 
 class PhrasePlayer:
@@ -214,13 +214,42 @@ class PhrasePlayer:
         self.__id = phrase_id
         self.__cursor = 0
 
-    def step(self, sequencer: Sequencer):
-        self.__cursor = (self.__cursor + 1) % 16
+    def step(self, sequencer: Sequencer, track: int) -> bool:
         phrase = sequencer.phrase[self.__id]
-        if phrase is None:
-            return
-        step = phrase[self.__cursor]
-        sequencer.play(0, step)
+        if phrase is not None:
+            step = phrase[self.__cursor]
+            sequencer.play(track, step)
+        self.__cursor = (self.__cursor + 1) % 16
+        res = False
+        if self.__cursor == 0:
+            res = True
+        return res
+
+
+class ChainPlayer:
+    def __init__(self, chain_id: int):
+        self.__id = chain_id
+        self.__cursor = 0
+        self.__phrase_player = None
+
+    def step(self, sequencer: Sequencer, track: int) -> bool:
+        chain = sequencer.chain[self.__id]
+        if chain is None:
+            return True
+        phrase_id = chain[self.__cursor]
+        if phrase_id is None:
+            return True
+        if self.__phrase_player is None:
+            self.__phrase_player = PhrasePlayer(phrase_id)
+        if self.__phrase_player.step(sequencer, track):
+            self.__phrase_player = None
+            res = False
+            self.__cursor += 1
+            if chain[self.__cursor] is None:
+                self.__cursor = 0
+                res = True
+            return res
+        return False
 
 
 class Sequencer:
@@ -236,7 +265,7 @@ class Sequencer:
         self.__chains: list[Optional[Chain]] = [None for _ in range(256)]
         self.__phrases: list[Optional[Phrase]] = [None for _ in range(256)]
         self.__instruments: list[Optional[Instrument]] = [None for _ in range(256)]
-        self.__player: Player = PhrasePlayer(0)
+        self.__player: Player = ChainPlayer(0)
 
         ##### TEST #####
         self.__instruments[0] = Instrument()
@@ -286,7 +315,8 @@ class Sequencer:
         #     step = self.get_step(i)
         #     if step is not None:
         #         step.play(i, self.__engine)
-        self.__player.step(self)
+
+        self.__player.step(self, 0)
 
     def play(self, track: int, step: Optional[Step]):
         if step is None:
