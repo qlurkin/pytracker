@@ -1,7 +1,7 @@
 import pygame
 from clipboard import ClipBoard
 from sequencer import Phrase, Sequencer, Step
-from event import Event
+from event import Event, process_events
 from focus_manager import FocusManager, draw_focus
 from typing import Optional
 from tone import Tone
@@ -30,23 +30,30 @@ def phrase_view(
         if sequencer.phrase[id] is None:
             sequencer.phrase[id] = Phrase()
 
-    for event in events:
+    def handler(event) -> bool:
         if event == Event.MoveUp:
             if not local_focus.up():
                 global_focus.up()
+            return True
         if event == Event.MoveDown:
             if not local_focus.down():
                 global_focus.down()
+            return True
         if event == Event.MoveLeft:
             if not local_focus.left():
                 global_focus.left()
+            return True
         if event == Event.MoveRight:
             if not local_focus.right():
                 global_focus.right()
+            return True
+        return False
+
+    process_events(events, handler)
 
     local_focus.begin_frame()
 
-    inner = frame(focused, screen, rect, f"Phrase {id:0>2}")
+    inner = frame(focused, screen, rect, f"Phrase {id:0>2x}")
 
     phrase = sequencer.phrase[id]
 

@@ -1,7 +1,7 @@
 import pygame
 from clipboard import ClipBoard
 from sequencer import Sequencer
-from event import Event
+from event import Event, process_events
 from focus_manager import FocusManager, draw_focus
 from typing import Optional
 from views.cursor_column import cursor_column
@@ -20,24 +20,32 @@ def track_view(
     sequencer: Sequencer,
     id: int,
     events: list[Event],
+    offset: int = 0,
 ):
     focused = global_focus(rect)
     if not focused:
         events = []
 
-    for event in events:
+    def handler(event: Event) -> bool:
         if event == Event.MoveUp:
             if not local_focus.up():
                 global_focus.up()
+            return True
         if event == Event.MoveDown:
             if not local_focus.down():
                 global_focus.down()
+            return True
         if event == Event.MoveLeft:
             if not local_focus.left():
                 global_focus.left()
+            return True
         if event == Event.MoveRight:
             if not local_focus.right():
                 global_focus.right()
+            return True
+        return False
+
+    process_events(events, handler)
 
     local_focus.begin_frame()
 
@@ -49,7 +57,7 @@ def track_view(
     def set_chain(i: int):
         def fun(chain_id: Optional[int]):
             assert track is not None
-            track[i] = chain_id
+            track[i + offset] = chain_id
             if chain_id is not None:
                 ClipBoard.chain_id = chain_id
 
@@ -58,14 +66,14 @@ def track_view(
     def get_phrase(i: int):
         def fun() -> Optional[int]:
             assert track is not None
-            return track[i]
+            return track[i + offset]
 
         return fun
 
     track_cursor = sequencer.player.get_track_cursor()
 
     def cursor_here(i: int) -> bool:
-        if (id, i) in track_cursor:
+        if (id, i + offset) in track_cursor:
             return True
         return False
 
@@ -86,7 +94,7 @@ def track_view(
         events,
     )
 
-    chain_id = track[focused_slot]
+    chain_id = track[focused_slot + offset]
     if chain_id is not None:
         ui.ui_state.chain_id = chain_id
 

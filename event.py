@@ -1,4 +1,5 @@
 from enum import Enum, auto
+from typing import Callable
 
 
 class Key(Enum):
@@ -29,3 +30,10 @@ class Event(Enum):
     Clear = auto()
     Play = auto()
     ShiftPlay = auto()
+
+
+# Handlers returns True if event is consumed (should be removed)
+def process_events(events: list[Event], handler: Callable[[Event], bool]):
+    for event in list(events):
+        if handler(event):
+            events.remove(event)

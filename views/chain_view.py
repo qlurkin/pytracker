@@ -1,7 +1,7 @@
 import pygame
 from clipboard import ClipBoard
 from sequencer import Chain, Sequencer
-from event import Event
+from event import Event, process_events
 from focus_manager import FocusManager, draw_focus
 from typing import Optional
 from views.cursor_column import cursor_column
@@ -30,23 +30,30 @@ def chain_view(
         if sequencer.chain[id] is None:
             sequencer.chain[id] = Chain()
 
-    for event in events:
+    def handler(event: Event) -> bool:
         if event == Event.MoveUp:
             if not local_focus.up():
                 global_focus.up()
+            return True
         if event == Event.MoveDown:
             if not local_focus.down():
                 global_focus.down()
+            return True
         if event == Event.MoveLeft:
             if not local_focus.left():
                 global_focus.left()
+            return True
         if event == Event.MoveRight:
             if not local_focus.right():
                 global_focus.right()
+            return True
+        return False
+
+    process_events(events, handler)
 
     local_focus.begin_frame()
 
-    inner = frame(focused, screen, rect, f"Chain {id:0>2}")
+    inner = frame(focused, screen, rect, f"Chain {id:0>2x}")
 
     chain = sequencer.chain[id]
 

@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from ads import Ads
 from audio_node import an
 from engine import Engine
-from event import Event
+from event import Event, process_events
 from focus_manager import FocusManager
 from modulate import Modulate
 from pan import Pan
@@ -26,6 +26,7 @@ focus_manager = FocusManager()
 class UiState:
     phrase_id: int = 0
     chain_id: int = 0
+    song_view_offset: int = 0
 
 
 ui_state = UiState()
@@ -38,15 +39,19 @@ def ui(
     engine: Engine,
     sequencer: Sequencer,
 ):
-    for event in events:
+    def handler(event) -> bool:
         if event == Event.ShiftMoveUp:
             focus_manager.up()
+            return True
         if event == Event.ShiftMoveDown:
             focus_manager.down()
+            return True
         if event == Event.ShiftMoveLeft:
             focus_manager.left()
+            return True
         if event == Event.ShiftMoveRight:
             focus_manager.right()
+            return True
         if event == Event.Play:
             engine.add_note(
                 5,
@@ -59,6 +64,10 @@ def ui(
                 0.5,
                 0.5,
             )
+            return True
+        return False
+
+    process_events(events, handler)
 
     focus_manager.begin_frame()
 
@@ -84,6 +93,7 @@ def ui(
         sequencer,
         0,
         events,
+        ui_state.song_view_offset,
     )
 
     chain_view(
