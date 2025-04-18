@@ -84,11 +84,8 @@ def phrase_view(
     phrase_cursor = sequencer.player.get_phrase_cursor()
 
     def cursor_here(i: int) -> bool:
-        if phrase_cursor is None:
-            return False
-        phrase_id, cursor = phrase_cursor
-        if phrase_id == id:
-            return i == cursor
+        if (id, i) in phrase_cursor:
+            return True
         return False
 
     if phrase is not None:

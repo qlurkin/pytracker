@@ -72,11 +72,8 @@ def chain_view(
     chain_cursor = sequencer.player.get_chain_cursor()
 
     def cursor_here(i: int) -> bool:
-        if chain_cursor is None:
-            return False
-        chain_id, cursor = chain_cursor
-        if chain_id == id:
-            return cursor == i
+        if (id, i) in chain_cursor:
+            return True
         return False
 
     if chain is not None:

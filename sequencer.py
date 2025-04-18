@@ -207,9 +207,9 @@ class Track:
 
 class Player(Protocol):
     def step(self, sequencer: Sequencer, track: int) -> bool: ...
-    def get_phrase_cursor(self) -> Optional[tuple[int, int]]: ...
-    def get_chain_cursor(self) -> Optional[tuple[int, int]]: ...
-    def get_track_cursor(self) -> Optional[tuple[int, int]]: ...
+    def get_phrase_cursor(self) -> list[tuple[int, int]]: ...
+    def get_chain_cursor(self) -> list[tuple[int, int]]: ...
+    def get_track_cursor(self) -> list[tuple[int, int]]: ...
 
 
 class PhrasePlayer:
@@ -228,14 +228,14 @@ class PhrasePlayer:
             res = True
         return res
 
-    def get_phrase_cursor(self) -> Optional[tuple[int, int]]:
-        return (self.__id, self.__cursor)
+    def get_phrase_cursor(self) -> list[tuple[int, int]]:
+        return [(self.__id, self.__cursor)]
 
-    def get_chain_cursor(self) -> Optional[tuple[int, int]]:
-        return None
+    def get_chain_cursor(self) -> list[tuple[int, int]]:
+        return []
 
-    def get_track_cursor(self) -> Optional[tuple[int, int]]:
-        return None
+    def get_track_cursor(self) -> list[tuple[int, int]]:
+        return []
 
 
 class ChainPlayer:
@@ -266,16 +266,16 @@ class ChainPlayer:
             return res
         return False
 
-    def get_phrase_cursor(self) -> Optional[tuple[int, int]]:
+    def get_phrase_cursor(self) -> list[tuple[int, int]]:
         if self.__phrase_player is None:
-            return None
+            return []
         return self.__phrase_player.get_phrase_cursor()
 
-    def get_chain_cursor(self) -> Optional[tuple[int, int]]:
-        return (self.__id, self.__cursor)
+    def get_chain_cursor(self) -> list[tuple[int, int]]:
+        return [(self.__id, self.__cursor)]
 
-    def get_track_cursor(self) -> Optional[tuple[int, int]]:
-        return None
+    def get_track_cursor(self) -> list[tuple[int, int]]:
+        return []
 
 
 class TrackPlayer:
@@ -305,18 +305,18 @@ class TrackPlayer:
             return res
         return False
 
-    def get_phrase_cursor(self) -> Optional[tuple[int, int]]:
+    def get_phrase_cursor(self) -> list[tuple[int, int]]:
         if self.__chain_player is None:
-            return None
+            return []
         return self.__chain_player.get_phrase_cursor()
 
-    def get_chain_cursor(self) -> Optional[tuple[int, int]]:
+    def get_chain_cursor(self) -> list[tuple[int, int]]:
         if self.__chain_player is None:
-            return None
+            return []
         return self.__chain_player.get_chain_cursor()
 
-    def get_track_cursor(self) -> Optional[tuple[int, int]]:
-        return (self.__id, self.__cursor)
+    def get_track_cursor(self) -> list[tuple[int, int]]:
+        return [(self.__id, self.__cursor)]
 
 
 class Sequencer:

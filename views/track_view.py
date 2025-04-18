@@ -65,11 +65,8 @@ def track_view(
     track_cursor = sequencer.player.get_track_cursor()
 
     def cursor_here(i: int) -> bool:
-        if track_cursor is None:
-            return False
-        track_id, cursor = track_cursor
-        if track_id == id:
-            return cursor == i
+        if (id, i) in track_cursor:
+            return True
         return False
 
     cursor_column_rect = grid_rect(1, 16)
