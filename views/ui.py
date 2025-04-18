@@ -12,8 +12,9 @@ from pan import Pan
 from sequencer import Sequencer
 from sine_oscilator import SineOscilator
 from value import Value
+from views.track_view import track_view
 from views.chain_view import chain_view
-from views.font import GRID_HEIGHT, draw_text, grid_rect
+from views.font import GRID_HEIGHT, GRID_WIDTH, draw_text, grid_rect
 from views.output_monitor import output_monitor
 from views.phrase_view import phrase_view
 from views.scope import scope
@@ -24,6 +25,7 @@ focus_manager = FocusManager()
 @dataclass
 class UiState:
     phrase_id: int = 0
+    chain_id: int = 0
 
 
 ui_state = UiState()
@@ -75,19 +77,28 @@ def ui(
 
     output_monitor(screen, output_monitor_rect, engine)
 
+    track_view(
+        focus_manager,
+        screen,
+        pygame.Rect(0, 200 + GRID_HEIGHT, 3 * GRID_WIDTH, 16 * GRID_HEIGHT),
+        sequencer,
+        0,
+        events,
+    )
+
     chain_view(
         focus_manager,
         screen,
-        pygame.Rect(0, 200, 300, 17.5 * GRID_HEIGHT),
+        pygame.Rect(3 * GRID_WIDTH, 200, 300, 17.5 * GRID_HEIGHT),
         sequencer,
-        0,
+        ui_state.chain_id,
         events,
     )
 
     phrase_view(
         focus_manager,
         screen,
-        pygame.Rect(300, 200, 300, 17.5 * GRID_HEIGHT),
+        pygame.Rect(300 + 3 * GRID_WIDTH, 200, 300, 17.5 * GRID_HEIGHT),
         sequencer,
         ui_state.phrase_id,
         events,

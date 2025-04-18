@@ -6,6 +6,7 @@ class __ClipboardClass:
     def __init__(self):
         self.__tone = Tone()
         self.phrase_id = 0
+        self.chain_id = 0
 
     @property
     def tone(self):

@@ -1,6 +1,6 @@
 import pygame
 from clipboard import ClipBoard
-from sequencer import Sequencer
+from sequencer import Chain, Sequencer
 from event import Event
 from focus_manager import FocusManager, draw_focus
 from typing import Optional
@@ -26,6 +26,9 @@ def chain_view(
     focused = global_focus(rect)
     if not focused:
         events = []
+    else:
+        if sequencer.chain[id] is None:
+            sequencer.chain[id] = Chain()
 
     for event in events:
         if event == Event.MoveUp:

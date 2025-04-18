@@ -278,6 +278,47 @@ class ChainPlayer:
         return None
 
 
+class TrackPlayer:
+    def __init__(self, track_id: int):
+        self.__id = track_id
+        self.__cursor = 0
+        self.__chain_player = None
+
+    def step(self, sequencer: Sequencer, track: int) -> bool:
+        track_obj = sequencer.track[self.__id]
+        chain_id = track_obj[self.__cursor]
+        if chain_id is None:
+            return True
+        if self.__chain_player is None:
+            self.__chain_player = ChainPlayer(chain_id)
+        if self.__chain_player.step(sequencer, track):
+            self.__chain_player = None
+            res = False
+            self.__cursor += 1
+            if track_obj[self.__cursor] is None:
+                # TODO: should return to the begining of the current region on the track
+                self.__cursor = 0
+                res = True
+                chain_id = track_obj[self.__cursor]
+                if chain_id is not None:
+                    self.__chain_player = ChainPlayer(chain_id)
+            return res
+        return False
+
+    def get_phrase_cursor(self) -> Optional[tuple[int, int]]:
+        if self.__chain_player is None:
+            return None
+        return self.__chain_player.get_phrase_cursor()
+
+    def get_chain_cursor(self) -> Optional[tuple[int, int]]:
+        if self.__chain_player is None:
+            return None
+        return self.__chain_player.get_chain_cursor()
+
+    def get_track_cursor(self) -> Optional[tuple[int, int]]:
+        return (self.__id, self.__cursor)
+
+
 class Sequencer:
     def __init__(self, engine: Engine):
         self.__engine = engine
@@ -291,7 +332,7 @@ class Sequencer:
         self.__chains: list[Optional[Chain]] = [None for _ in range(256)]
         self.__phrases: list[Optional[Phrase]] = [None for _ in range(256)]
         self.__instruments: list[Optional[Instrument]] = [None for _ in range(256)]
-        self.__player: Player = ChainPlayer(0)
+        self.__player: Player = TrackPlayer(0)
 
         ##### TEST #####
         self.__instruments[0] = Instrument()
@@ -302,6 +343,7 @@ class Sequencer:
         chain = Chain()
         chain[0] = 0
         self.chain[0] = chain
+        self.track[0][0] = 0
 
     @property
     def track(self):
