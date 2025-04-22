@@ -36,6 +36,7 @@ class Device:
                     self.__next_node = None
                 samples = self.__node.send(frames)
                 samples = samples.T.flatten()
+                samples = np.clip(samples, -1, 1)  # basic protection
                 frames = yield samples.astype(np.float32).tobytes()
 
         noise = noise_maker()
