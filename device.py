@@ -2,6 +2,7 @@ import miniaudio
 import numpy as np
 from audio_node import AudioNode, an
 from modulate import Modulate
+from passband import PassBand
 from release import Release
 from zero import ZERO_STEREO
 from config import SAMPLE_RATE, BUFFER_SIZE_MS
@@ -24,7 +25,8 @@ class Device:
     def set_node(self, node: AudioNode | None = None):
         if node is None:
             node = ZERO_STEREO
-        self.__next_node = node
+
+        self.__next_node = an(PassBand(node, 40, 18000))  # Protecion
 
     def start(self):
         def noise_maker():
